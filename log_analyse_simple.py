@@ -4,8 +4,10 @@ from collections import defaultdict
 # Путь к файлу с логами
 LOG_FILE = "access.log"
 
-# Регулярное выражение для парсинга логов Nginx в формате "combined"
-LOG_PATTERN = re.compile(r'(?P<ip>[\d\.]+) - - \[(?P<datetime>.+?)\] "(?P<method>[A-Z]+) (?P<url>.+?) (?P<protocol>.+?)" (?P<status>\d{3}) (?P<size>\d+|-) "(?P<referrer>.+?)" "(?P<user_agent>.+?)"')
+# Регулярное выражение для нового формата логов Nginx
+LOG_PATTERN = re.compile(
+    r'(?P<datetime>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}) (?P<level>\w+) (?P<component>\w+) (?P<message>.+)')
+
 
 def parse_log_line(line):
     """
@@ -14,10 +16,9 @@ def parse_log_line(line):
     """
     match = LOG_PATTERN.match(line)
     if match:
-        data = match.groupdict()
-        data["size"] = int(data["size"]) if data["size"].isdigit() else 0
-        return data
+        return match.groupdict()
     return None
+
 
 def parse_logs(file_path):
     """
@@ -31,43 +32,45 @@ def parse_logs(file_path):
                 parsed_logs.append(log_data)
     return parsed_logs
 
+
 def analyze_logs(logs):
     """
     Выполняет базовый анализ логов и возвращает статистику.
     """
     stats = {
-        "total_requests": len(logs),
-        "requests_by_status": defaultdict(int),
-        "requests_by_ip": defaultdict(int),
-        "top_requested_urls": defaultdict(int),
+        "total_logs": len(logs),
+        "logs_by_level": defaultdict(int),
+        "logs_by_component": defaultdict(int),
+        "error_messages": [],
     }
 
     for log in logs:
-        stats["requests_by_status"][log["status"]] += 1
-        stats["requests_by_ip"][log["ip"]] += 1
-        stats["top_requested_urls"][log["url"]] += 1
+        stats["logs_by_level"][log["level"]] += 1
+        stats["logs_by_component"][log["component"]] += 1
+        if log["level"].lower() == "error":
+            stats["error_messages"].append(log["message"])
 
-    # Сортируем топовые URL по частоте запросов
-    stats["top_requested_urls"] = sorted(stats["top_requested_urls"].items(), key=lambda x: x[1], reverse=True)[:10]
     return stats
+
 
 def display_stats(stats):
     """
     Выводит статистику в удобочитаемом виде.
     """
-    print(f"Общее количество запросов: {stats['total_requests']}")
+    print(f"Общее количество записей в логе: {stats['total_logs']}")
 
-    print("\nЗапросы по статусам HTTP:")
-    for status, count in stats["requests_by_status"].items():
-        print(f"  {status}: {count}")
+    print("\nКоличество записей по уровням логирования:")
+    for level, count in stats["logs_by_level"].items():
+        print(f"  {level}: {count}")
 
-    print("\nТоп 10 IP-адресов:")
-    for ip, count in sorted(stats["requests_by_ip"].items(), key=lambda x: x[1], reverse=True)[:10]:
-        print(f"  {ip}: {count}")
+    print("\nКоличество записей по компонентам:")
+    for component, count in stats["logs_by_component"].items():
+        print(f"  {component}: {count}")
 
-    print("\nТоп 10 запрашиваемых URL:")
-    for url, count in stats["top_requested_urls"]:
-        print(f"  {url}: {count}")
+    print("\nСписок ошибок:")
+    for message in stats["error_messages"]:
+        print(f"  {message}")
+
 
 if __name__ == "__main__":
     # Парсим лог-файл
