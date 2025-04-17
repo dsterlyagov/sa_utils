@@ -1,0 +1,771 @@
+ понедельник, 10 мар. · 15:03 
+status: Alerting. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=11. 
+status: Alerting. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=11. 
+status: OK. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. 
+status: Alerting. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=11. 
+status: OK. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. 
+ вторник, 11 мар. · 09:02 
+status: Alerting. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=11. 
+status: OK. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=11. 
+ вторник, 11 мар. · 14:01 
+status: Alerting. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=24. 
+ вторник, 11 мар. · 16:04 
+status: OK. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. 
+status: Alerting. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. valueString: var='A0' metric='Value' labels={} value=24. 
+status: OK. alertname: UKP_CP_decline. description: {metric_name: Other,metric_group: App}. summary: Превышено количество Отказов в процессе КП как норма в рамках контроля оферты. 
+ четверг, 13 мар. · 01:46 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=17. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=19. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=19. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ четверг, 13 мар. · 10:39 
+status: Alerting. alertname: DatasourceNoData. 
+ четверг, 13 мар. · 14:39 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=1635. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=19. 
+status: OK. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=20. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=1598. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ четверг, 13 мар. · 17:35 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ пятница, 14 мар. · 16:20 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+ пятница, 14 мар. · 23:29 
+status: Alerting. alertname: FPKP - Ответы сервиса УКП по СЗ ERROR. summary: Получены некорректные данные по СЗ на стратегию. valueString: var='B0' metric='Value' labels={product=pkborefin} value=1. 
+status: OK. alertname: FPKP - Ответы сервиса УКП по СЗ ERROR. summary: Получены некорректные данные по СЗ на стратегию. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=226. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ воскресенье, 16 мар. · 00:31 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=506. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=39. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=30. 
+ воскресенье, 16 мар. · 04:05 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=11. 
+ воскресенье, 16 мар. · 06:15 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=112. 
+ воскресенье, 16 мар. · 09:44 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ понедельник, 17 мар. · 07:43 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 17 мар. · 11:43 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 17 мар. · 14:26 
+status: Alerting. alertname: PPRB RPK_ISK_limit_delete. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок запросов восстановления лимита ИСК. Ответственный RDD OPS: Максимов А.Ю. моб. 89689978267, внутр.8-55726689, Ответственные Risk UI OPS: Афонин М.А. внутр.8-55773561; Краснощек И.А. сот.8926375842, внутр. 8-55745168. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_ISK_limit_delete. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок запросов восстановления лимита ИСК. Ответственный RDD OPS: Максимов А.Ю. моб. 89689978267, внутр.8-55726689, Ответственные Risk UI OPS: Афонин М.А. внутр.8-55773561; Краснощек И.А. сот.8926375842, внутр. 8-55745168. 
+status: Alerting. alertname: PPRB RPK_ISK_limit_delete. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок запросов восстановления лимита ИСК. Ответственный RDD OPS: Максимов А.Ю. моб. 89689978267, внутр.8-55726689, Ответственные Risk UI OPS: Афонин М.А. внутр.8-55773561; Краснощек И.А. сот.8926375842, внутр. 8-55745168. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_ISK_limit_delete. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок запросов восстановления лимита ИСК. Ответственный RDD OPS: Максимов А.Ю. моб. 89689978267, внутр.8-55726689, Ответственные Risk UI OPS: Афонин М.А. внутр.8-55773561; Краснощек И.А. сот.8926375842, внутр. 8-55745168. 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 17 мар. · 19:43 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 17 мар. · 22:33 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ вторник, 18 мар. · 17:45 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ среда, 19 мар. · 14:45 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+ среда, 19 мар. · 16:39 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ четверг, 20 мар. · 08:50 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+ четверг, 20 мар. · 12:57 
+status: Alerting. alertname: DatasourceNoData. 
+ четверг, 20 мар. · 15:53 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ пятница, 21 мар. · 06:43 
+status: Alerting. alertname: DatasourceNoData. 
+ пятница, 21 мар. · 07:48 
+status: Alerting. alertname: DatasourceNoData. 
+ пятница, 21 мар. · 10:27 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ пятница, 21 мар. · 11:48 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+ пятница, 21 мар. · 15:48 
+status: Alerting. alertname: DatasourceNoData. 
+ пятница, 21 мар. · 18:34 
+status: OK. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ пятница, 21 мар. · 23:14 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+ воскресенье, 23 мар. · 01:20 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=335. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=105. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=53. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=48. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=41. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+ понедельник, 24 мар. · 00:12 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+ понедельник, 24 мар. · 03:07 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+ понедельник, 24 мар. · 13:05 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+ понедельник, 24 мар. · 16:01 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+ вторник, 25 мар. · 07:04 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=855. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: DatasourceNoData. 
+ вторник, 25 мар. · 12:49 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=29. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=1796. 
+status: Alerting. alertname: Обработка POS. description: {metric_name: Latency,metric_group: App}. summary: Превышено количество POS в обработке. valueString: var='G0' metric='pos_amount_in_progess_pos_count' labels={__name__=pos_amount_in_progess_pos_count, app=postgres-exporter-ccdec0001-prom, hostname=postgres-exporter-ccdec0001-prom-6f5c88ff77-5r29j, instance=29.64.107.180:9187, job=kubernetes-pods, name=postgres-exporter-ccdec0001-prom, namespace=ci03821817-clcrpprbprom1, node. value: 62 ].
+status: Alerting. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=492. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=492. 
+status: OK. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. 
+status: Alerting. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. valueString: var='C0' metric='Value' labels={activityId=MainFPKP, product=online_pos} value=5. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=42. 
+status: OK. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: OK. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=492. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=492. 
+status: OK. alertname: Обработка POS. description: {metric_name: Latency,metric_group: App}. summary: Превышено количество POS в обработке. 
+status: OK. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: OK. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=1343. 
+status: OK. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: OK. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+ вторник, 25 мар. · 21:03 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ вторник, 25 мар. · 23:06 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=205. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ среда, 26 мар. · 07:53 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ среда, 26 мар. · 11:53 
+status: Alerting. alertname: DatasourceNoData. 
+ среда, 26 мар. · 13:37 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ среда, 26 мар. · 15:53 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. valueString: var='B0' metric='Value' labels={refuseCode=086} value=1. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: OK. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. 
+ среда, 26 мар. · 19:41 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ среда, 26 мар. · 23:22 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: RPK_PPRB_restart_pod_per_service_prom2. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom2. valueString: var='C0' metric='Value' labels={deployment=ekp-interaction-prom} , var='C1' metric='Value' labels={deployment=fpkp-prom} , var='C2' metric='Value' labels={deployment=offerservice-prom} , var='C3' metric='Value' labels={deployment=pti-prom} , var='C4' metric='Value' labels={deployment=rqproxy-prom} , var='C5' metr. value: 2 ].
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=370. 
+status: OK. alertname: RPK_PPRB_restart_pod_per_service_prom2. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom2. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=351. 
+status: Alerting. alertname: RPK_PPRB_restart_pod_per_service_prom1. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom1. valueString: var='C0' metric='Value' labels={deployment=cloudserver-prom2} value=2. 
+status: OK. alertname: RPK_PPRB_restart_pod_per_service_prom1. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom1. 
+ четверг, 27 мар. · 02:24 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=35. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=18. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ четверг, 27 мар. · 04:34 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ четверг, 27 мар. · 06:44 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ четверг, 27 мар. · 08:54 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: PPRB RPK_RZ_error_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество тех. ошибок сервиса РЗ.  Ответственный OPS: Максимов А.Ю. моб. 89689978267, вн.8-55726689. valueString: var='D0' metric='Value' labels={} value=11. 
+status: OK. alertname: PPRB RPK_RZ_error_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество тех. ошибок сервиса РЗ.  Ответственный OPS: Максимов А.Ю. моб. 89689978267, вн.8-55726689. 
+ четверг, 27 мар. · 11:24 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+ четверг, 27 мар. · 12:54 
+status: Alerting. alertname: DatasourceNoData. 
+ четверг, 27 мар. · 14:19 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+status: OK. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. 
+status: Alerting. alertname: ППРБ. Статус БД. description: {metric_name: Availability,metric_group: App}. summary: Возможно падение базы данных Posgresql. valueString: var='D0' metric='SQL_Server:_Ping_Status_Instance' labels={__name__=SQL_Server:_Ping_Status_Instance, hostname=pvlod-ccdec0004.dbsberpg.Patroni, r='pvlod-ccdec0004'} value=0. 
+ четверг, 27 мар. · 16:54 
+status: Alerting. alertname: DatasourceNoData. 
+ четверг, 27 мар. · 18:00 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+ четверг, 27 мар. · 21:35 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ пятница, 28 мар. · 01:03 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ пятница, 28 мар. · 04:31 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ пятница, 28 мар. · 08:18 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+ пятница, 28 мар. · 11:53 
+status: Alerting. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. valueString: var='B0' metric='Value' labels={refuseCode=086} value=1. 
+status: OK. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. 
+status: Alerting. alertname: DatasourceNoData. 
+ пятница, 28 мар. · 16:19 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ пятница, 28 мар. · 20:58 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ пятница, 28 мар. · 23:22 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=208. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=244. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=317. 
+status: Alerting. alertname: PPRB RPK_RZ_error_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество тех. ошибок сервиса РЗ.  Ответственный OPS: Максимов А.Ю. моб. 89689978267, вн.8-55726689. valueString: var='D0' metric='Value' labels={} value=13. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=318. 
+status: OK. alertname: PPRB RPK_RZ_error_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество тех. ошибок сервиса РЗ.  Ответственный OPS: Максимов А.Ю. моб. 89689978267, вн.8-55726689. 
+ суббота, 29 мар. · 23:12 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+ воскресенье, 30 мар. · 15:27 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+ воскресенье, 30 мар. · 19:47 
+status: Alerting. alertname: DatasourceNoData. 
+ воскресенье, 30 мар. · 21:37 
+status: Alerting. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. valueString: var='B0' metric='Value' labels={refuseCode=086} value=1. 
+status: OK. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. 
+ воскресенье, 30 мар. · 23:15 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+ понедельник, 31 мар. · 03:47 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 31 мар. · 07:48 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ понедельник, 31 мар. · 11:03 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+ понедельник, 31 мар. · 15:48 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 31 мар. · 19:48 
+status: Alerting. alertname: DatasourceNoData. 
+ понедельник, 31 мар. · 23:11 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=249. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=213. 
+status: Alerting. alertname: DatasourceNoData. 
+ вторник, 1 апр. · 03:49 
+status: Alerting. alertname: DatasourceNoData. 
+ вторник, 1 апр. · 07:49 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=8. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=6. 
+status: OK. alertname: DatasourceNoData. 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+ вторник, 1 апр. · 12:18 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=11. 
+ вторник, 1 апр. · 13:48 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=11. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+ вторник, 1 апр. · 17:49 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+ вторник, 1 апр. · 21:49 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+ среда, 2 апр. · 01:49 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+ среда, 2 апр. · 05:50 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+ среда, 2 апр. · 09:12 
+status: Alerting. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. valueString: var='D0' metric='Value' labels={} value=7. 
+status: OK. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. 
+status: Alerting. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. valueString: var='D0' metric='Value' labels={} value=9. 
+status: OK. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=9. 
+status: Alerting. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. valueString: var='D0' metric='Value' labels={} value=7. 
+status: OK. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. 
+status: Alerting. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. valueString: var='D0' metric='Value' labels={} value=6. 
+status: OK. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. 
+ среда, 2 апр. · 17:26 
+status: Alerting. alertname: Рефины - Отсутствие cbuuid в акцепте оферты. summary: !ВРЕМЕННЫЙ АЛЕРТ! Расчет ПДН по Рефину без UID. valueString: var='A0' metric='Value' labels={} value=2. 
+ среда, 2 апр. · 21:27 
+status: Alerting. alertname: Рефины - Отсутствие cbuuid в акцепте оферты. summary: !ВРЕМЕННЫЙ АЛЕРТ! Расчет ПДН по Рефину без UID. valueString: var='A0' metric='Value' labels={} value=2. 
+status: OK. alertname: Рефины - Отсутствие cbuuid в акцепте оферты. summary: !ВРЕМЕННЫЙ АЛЕРТ! Расчет ПДН по Рефину без UID. valueString: var='A0' metric='Value' labels={} value=2. 
+ четверг, 3 апр. · 00:09 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=20. 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=11. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ четверг, 3 апр. · 02:26 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=48. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=25. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=16. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ четверг, 3 апр. · 05:41 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=16. 
+ четверг, 3 апр. · 09:41 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=82. 
+ четверг, 3 апр. · 13:41 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=79. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=78. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=74. 
+ четверг, 3 апр. · 16:18 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=18. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=18. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=62. 
+ четверг, 3 апр. · 19:52 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=18. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ четверг, 3 апр. · 20:57 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=23. 
+ четверг, 3 апр. · 22:54 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ пятница, 4 апр. · 00:06 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=38. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=16. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=38. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=21. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+status: Alerting. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. valueString: var='B0' metric='Value' labels={} value=1. 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=20. 
+status: OK. alertname: PPRB RPK_UFS_message_not_delivered. description: {metric_name: Other,metric_group: App}. summary: Есть недоставленные сообщения. Дежурный собирает ТКС с ДС ЕФС 855990211. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+ пятница, 4 апр. · 11:35 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+ пятница, 4 апр. · 14:37 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=5. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+ суббота, 5 апр. · 01:14 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=28. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=27. 
+ суббота, 5 апр. · 09:08 
+status: Alerting. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. valueString: var='B0' metric='Value' labels={refuseCode=088} value=1. 
+status: OK. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. 
+status: Alerting. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. valueString: var='B0' metric='Value' labels={refuseCode=088} value=1. 
+status: OK. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. 
+status: Alerting. alertname: ПК PTI - Отказы по СЗ на этапе ПДН. summary: !ВРЕМЕННЫЙ АЛЕРТ! Отказ по проверке СЗ по Рефину на этапе ПДН. valueString: var='B0' metric='Value' labels={refuseCode=088} value=1. 
+ суббота, 5 апр. · 23:13 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. valueString: var='D0' metric='Value' labels={} value=0. 
+ воскресенье, 6 апр. · 00:51 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=6. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=31. 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=19. 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=82. 
+ воскресенье, 6 апр. · 03:20 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+status: Alerting. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). valueString: var='B0' metric='Value' labels={} value=17. 
+status: OK. alertname: PPRB RPK_EKP_reverse_flow_payout. description: {metric_name: Error,metric_group: App}. summary: Количество ошибок создания заявки на выдачу кредита в ЕКП. Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230 ). 
+ вторник, 8 апр. · 16:52 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+ вторник, 8 апр. · 20:52 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+ вторник, 8 апр. · 22:30 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+ среда, 9 апр. · 00:14 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+ среда, 9 апр. · 05:46 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=10. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=10. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=1217. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=208. 
+status: Alerting. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. valueString: var='C0' metric='Value' labels={activityId=MainFPKP, product=online_pos} value=2. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=208. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: Alerting. alertname: PPRB RPK_error_request. description: {metric_name: Error,metric_group: App}. summary: Превышено количество заявок в статусе Ошибка.  Общий счетчик, смотреть сторонние сервисы, при возникновении вопросов обращаться ответственным OPS: Кузьмичев Д.А.внутр.855715295,сот., Леонов И.В.. внутр.855769674, сот.89645753568. valueString: var='B0' metric='clcr_autodecline_status_app_count' labels={__name__=clcr_autodecline_status_app_count, app=postgres-exporter-c. value: 403 ].
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=6. 
+status: OK. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: OK. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: OK. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=406. 
+status: Alerting. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. valueString: var='A0' metric='Value' labels={} value=406. 
+status: OK. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. 
+status: OK. alertname: PPRB RPK_UKP_errors_response (autoIncident). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: OK. alertname: PPRB RPK_UKP_errors_response. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок в ответе от УКП.  Ответственные OPS: Марусин С.И. сот. 89221126258, внутр. 8-64195067; Кандауров Д.Н. сот. 89153897439, внутр. 8-55728904. 
+status: OK. alertname: PPRB RPK_error_request. description: {metric_name: Error,metric_group: App}. summary: Превышено количество заявок в статусе Ошибка.  Общий счетчик, смотреть сторонние сервисы, при возникновении вопросов обращаться ответственным OPS: Кузьмичев Д.А.внутр.855715295,сот., Леонов И.В.. внутр.855769674, сот.89645753568. 
+status: Alerting. alertname: PPRB RPK_error_request. description: {metric_name: Error,metric_group: App}. summary: Превышено количество заявок в статусе Ошибка.  Общий счетчик, смотреть сторонние сервисы, при возникновении вопросов обращаться ответственным OPS: Кузьмичев Д.А.внутр.855715295,сот., Леонов И.В.. внутр.855769674, сот.89645753568. valueString: var='B0' metric='clcr_autodecline_status_app_count' labels={__name__=clcr_autodecline_status_app_count, app=postgres-exporter-c. value: 301 ].
+status: OK. alertname: PPRB RPK_error_request. description: {metric_name: Error,metric_group: App}. summary: Превышено количество заявок в статусе Ошибка.  Общий счетчик, смотреть сторонние сервисы, при возникновении вопросов обращаться ответственным OPS: Кузьмичев Д.А.внутр.855715295,сот., Леонов И.В.. внутр.855769674, сот.89645753568. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=355. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=6. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=5. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: OK. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. 
+status: Alerting. alertname: POS Обратный поток (1.3) ЕКП (АС Кредитование) в разрезе статуса (за текущий день). description: {metric_name: Error,metric_group: App}. summary: POS ПСК - Превышено количество ошибок/отказов по ПСК. valueString: var='B0' metric='Value' labels={} value=4. 
+ четверг, 10 апр. · 00:50 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=406. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=256. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ четверг, 10 апр. · 13:30 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ четверг, 10 апр. · 21:31 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=269. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=23. 
+status: OK. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=23. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ пятница · 16:03 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+ пятница · 17:20 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ пятница · 19:37 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ пятница · 23:12 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=221. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ суббота · 08:05 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+ суббота · 09:23 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ суббота · 10:34 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=206. 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+ суббота · 14:02 
+status: Alerting. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. valueString: var='C0' metric='Value' labels={activityId=MainFPKP, product=online_pos} value=2. 
+status: OK. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=2. 
+status: Alerting. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. valueString: var='C0' metric='Value' labels={activityId=MainFPKP, product=offline_pos} value=2. 
+status: OK. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+status: Alerting. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). valueString: var='A0' metric='Value' labels={errorCode=SYSTEM-OKI-067} value=3. 
+status: OK. alertname: PPRB RPK OKI-067. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок поиска расчета КП в КПХ (ответ от УКП OKI-067). 
+ суббота · 23:15 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+ воскресенье · 00:45 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: Alerting. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Входящий поток по  POS за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам POS. 
+status: OK. alertname: PPRB Входящий поток по спец. продуктам за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по спец. продуктам ПК. 
+status: OK. alertname: PPRB Входящий поток по ПК за 10 мин. description: {metric_name: Error,metric_group: App}. summary: Отсутствует входящий поток по заявкам ПК.. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). 
+status: Alerting. alertname: PPRB Отсутствует входящий поток заявок по ПК (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по ПК от ЕКП.ПК (REST). valueString: var='D0' metric='Value' labels={} value=0. 
+status: OK. alertname: PPRB Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). description: {metric_name: Availability,metric_group: App}. summary: Отсутствует входящий поток заявок по Спец.продуктам от ЕКП.ФСП (REST). 
+ воскресенье · 02:23 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=28. 
+ воскресенье · 03:34 
+status: OK. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). 
+status: Alerting. alertname: PPRB RPK_EKP_errors_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество технических ошибок сервиса ЕКП.  Дежурный собирает ТКС с ДС ЕКП (г.Екатеринбург внутр.855990220, моб.89126154668; г.Хабаровск внутр.855990220, моб.89842856230). valueString: var='C0' metric='Value' labels={} value=13. 
+ понедельник · 09:22 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=411. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ понедельник · 23:14 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=204. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: Alerting. alertname: RPK_PPRB_restart_pod_per_service_prom2. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom2. valueString: var='C0' metric='Value' labels={deployment=cloudserver-prom} value=2. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=222. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: OK. alertname: RPK_PPRB_restart_pod_per_service_prom2. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom2. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: RPK_PPRB_restart_pod_per_service_prom1. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom1. valueString: var='C0' metric='Value' labels={deployment=process-orchestra-prom2} value=2. 
+status: OK. alertname: RPK_PPRB_restart_pod_per_service_prom1. summary: Превышено количество незапущенных pod по config в рамках одного сервиса на prom1. 
+ вторник · 05:57 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=550. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=4. 
+status: Alerting. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. valueString: var='C0' metric='Value' labels={activityId=MainFPKP, product=online_pos} value=2. 
+status: Alerting. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. valueString: var='D0' metric='Value' labels={errorCode=SYSTEM-OKI-009} value=9. 
+status: OK. alertname: ПОС Ошибки внешних систем в вызове УКП. description: {metric_name: Error,metric_group: App}. summary: ПОС Ошибки вызова внешних систем в ответе УКП. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=11. 
+status: OK. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: Alerting. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. valueString: var='C0' metric='Value' labels={activityId=MainFPKP, product=offline_pos} value=2, var='C1' metric='Value' labels={activityId=MainFPKP, product=online_pos} value=3. 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=11. 
+status: OK. alertname: Кол-во отказных заявок после з-х вызовов ФП УКП. description: {metric_name: Error,metric_group: App}. summary: Превышено количество отказных POS заявок с 3-мя вызовами УКП. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+ вторник · 12:27 
+status: Alerting. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. valueString: var='D0' metric='Value' labels={} value=6. 
+status: OK. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=273. 
+status: OK. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). 
+status: Alerting. alertname: PPRB Превышено количество ошибок расчета КП (ЕТВ). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок расчета КП (ЕТВ). valueString: var='D0' metric='Value' labels={} value=288. 
+ среда · 12:30 
+status: Alerting. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. valueString: var='D0' metric='Value' labels={status=ERR} value=6. 
+status: Alerting. alertname: PPRB RPK_RZ_error_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество тех. ошибок сервиса РЗ.  Ответственный OPS: Максимов А.Ю. моб. 89689978267, вн.8-55726689. valueString: var='D0' metric='Value' labels={} value=33. 
+status: OK. alertname: POS в ошибке. description: {metric_name: Error,metric_group: App}. summary: Превышен порог POS заявок в статусе ошибка.. 
+status: OK. alertname: PPRB RPK_RZ_error_tech. description: {metric_name: Error,metric_group: App}. summary: Превышено количество тех. ошибок сервиса РЗ.  Ответственный OPS: Максимов А.Ю. моб. 89689978267, вн.8-55726689. 
+ среда · 23:53 
+status: Alerting. alertname: DatasourceNoData. 
+status: OK. alertname: DatasourceNoData. 
+status: Alerting. alertname: PPRB Превышено количество ошибок обращения в SmT. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок обращения в SmT. valueString: var='D0' metric='Value' labels={} value=3. 
+status: Alerting. alertname: PPRB Превышено количество ошибок ответа от SmT. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок ответа от SmT. valueString: var='D0' metric='Value' labels={} value=3. 
+status: OK. alertname: PPRB Превышено количество ошибок ответа от SmT. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок ответа от SmT. 
+status: Alerting. alertname: PPRB Превышено количество ошибок ответа от SmT. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок ответа от SmT. valueString: var='D0' metric='Value' labels={} value=3. 
+status: OK. alertname: PPRB Превышено количество ошибок обращения в SmT. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок обращения в SmT. 
+status: OK. alertname: PPRB Превышено количество ошибок ответа от SmT. description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок ответа от SmT. 
+ 10:10 
+status: Alerting. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. valueString: var='D0' metric='Value' labels={} value=7. 
+status: OK. alertname: PPRB Ошибки счета для погашения-зачисления кредита при выдаче кредита (1.3 от ЕКП). description: {metric_name: Error,metric_group: App}. summary: Превышено количество ошибок проверки счета зачисления-погашения кредита в 1.3 от ЕКП. 
+10:23
