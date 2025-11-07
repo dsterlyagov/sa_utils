@@ -29,3 +29,9 @@ tsx build-meta-from-zod.ts
 
 
 pwsh -File .\run-build-meta.ps1
+
+python build_meta_runner.py `
+  --script "C:\Users\19060455\PycharmProjects\jira-tasks-mfd\widget-store\scripts\build-meta-from-zod.ts" `
+  --outdir "C:\Users\19060455\PycharmProjects\jira-tasks-mfd\widget-store\output" `
+  --outfile "widget-meta.json"
+
