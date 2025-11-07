@@ -27,3 +27,5 @@ npx tsx build-meta-from-zod.ts
 npm i -g tsx
 tsx build-meta-from-zod.ts
 
+
+pwsh -File .\run-build-meta.ps1
