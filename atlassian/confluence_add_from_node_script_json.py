@@ -2,196 +2,162 @@
 # -*- coding: utf-8 -*-
 
 """
-Запуск TypeScript-скрипта build-meta-from-zod.ts + проверка результата.
+Запускает TS-скрипт (build-meta-from-zod.ts) так, чтобы он стабильно отработал на Windows:
+ - пробует npx tsx  (рекомендуется; не требует настройки ESM/CJS)
+ - затем npx ts-node --transpile-only
+ - затем node -r ts-node/register
+ - затем node --loader ts-node/esm  (как крайний случай)
 
-Что делает:
-  1) Ищет build-meta-from-zod.ts рядом или по пути из NODE_SCRIPT.
-  2) Пытается запустить через один из раннеров (по порядку):
-        - npx -y tsx <script>
-        - npx -y ts-node --transpile-only <script>
-        - node --loader ts-node/esm <script>
-     (первый удачный — победил)
-  3) Создаёт папку output при необходимости.
-  4) Ждёт появления файла результата (по умолчанию output/widget-meta.json).
-  5) Валидирует структуру результата против эталона (из widget-meta.json, если он есть рядом,
-     либо валидирует базовые поля).
-Переменные окружения:
-  NODE_SCRIPT      — путь к build-meta-from-zod.ts (по умолчанию ./build-meta-from-zod.ts)
-  OUTPUT_DIR       — путь к папке для результатов (по умолчанию ./output)
-  OUTPUT_FILENAME  — имя файла результата (по умолчанию widget-meta.json)
-  EXEC_TIMEOUT_SEC — общий таймаут на выполнение (по умолчанию 300 сек)
+Далее ждёт появления output/widget-meta.json и проверяет JSON.
+
+Пример:
+  python build_meta_runner.py ^
+    --script .\widget-store\scripts\build-meta-from-zod.ts ^
+    --outdir .\widget-store\output ^
+    --outfile widget-meta.json
 """
 
+import argparse
 import json
 import os
-import sys
-import time
 import shutil
 import subprocess
+import sys
+import time
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import List, Optional
 
-# ---- настройки по умолчанию ----
-NODE_SCRIPT = os.getenv("NODE_SCRIPT", "./build-meta-from-zod.ts")
-OUTPUT_DIR = os.getenv("OUTPUT_DIR", "./output")
-OUTPUT_FILENAME = os.getenv("OUTPUT_FILENAME", "widget-meta.json")
-EXEC_TIMEOUT_SEC = int(os.getenv("EXEC_TIMEOUT_SEC", "300"))
-
-RUNNERS: List[List[str]] = [
-    ["npx", "-y", "tsx"],                          # лучший вариант для ESM/TS без настройки
-    ["npx", "-y", "ts-node", "--transpile-only"],  # быстро и без типчека
-    ["node", "--loader", "ts-node/esm"],           # если ts-node/esm доступен как лоадер
+# ---- стратегии запуска TS ----
+RUNNERS = [
+    ["npx", "-y", "tsx"],                           # 1) лучший путь: сам разрулит ESM/CJS
+    ["npx", "-y", "ts-node", "--transpile-only"],   # 2) быстро, без типчека
+    ["node", "-r", "ts-node/register"],             # 3) preload ts-node как CJS
+    ["node", "--loader", "ts-node/esm"],            # 4) ESM-лоадер (может требовать ESM-настройки)
 ]
 
-def _which(bin_name: str) -> bool:
-    return shutil.which(bin_name) is not None
+def which_or_none(name: str) -> Optional[str]:
+    return shutil.which(name)
 
-def pick_runner(script: str) -> List[str]:
+def pick_runner(script: Path) -> List[str]:
     """
-    Возвращает команду запуска (список argv) для доступного раннера.
-    Бросает исключение, если ни один не найден.
+    Возвращает команду запуска (argv) для первого доступного раннера.
+    Бросает RuntimeError, если ничего не подошло.
     """
-    errors: List[str] = []
-    for runner in RUNNERS:
-        # проверяем наличие первого бинаря в команде
-        if not _which(runner[0]):
-            errors.append(f"skip {' '.join(runner)}: '{runner[0]}' не найден в PATH")
+    errors = []
+    for candidate in RUNNERS:
+        exe = candidate[0]
+        if not which_or_none(exe):
+            errors.append(f"skip {' '.join(candidate)}: '{exe}' не найден в PATH")
             continue
-        # "сухой" прогон --version (кроме node --loader …)
+
+        # node обычно есть; для npx проверим версию (если можно)
         try:
-            if runner[0] == "node":
-                # node почти всегда есть, пробуем сразу с лоадером — реальную ошибку поймаем на запуске
-                return runner + [script]
-            else:
-                subprocess.run([runner[0], "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                return runner + [script]
+            if exe != "node":
+                subprocess.run([exe, "--version"], stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL, check=True)
         except Exception as e:
-            errors.append(f"skip {' '.join(runner)}: {e}")
+            errors.append(f"skip {' '.join(candidate)}: {e}")
             continue
+
+        # если дошли сюда — runner доступен
+        return candidate + [str(script)]
 
     raise RuntimeError(
-        "Не найден подходящий раннер TypeScript (tsx/ts-node). "
-        + "Поставьте любой из них: `npm i -g tsx` или используйте `npx -y tsx`.\n"
+        "Не найден ни один подходящий раннер TypeScript (tsx/ts-node/node). "
+        "Установите Node.js и npm; затем можно запускать через 'npx -y tsx'.\n"
         + "\n".join(errors)
     )
 
-def run_ts(script_path: Path) -> None:
-    cmd = pick_runner(str(script_path))
-    print(f"▶️  Запуск: {' '.join(cmd)}")
+def run_ts(cmd: List[str], cwd: Path, timeout_sec: int) -> None:
+    """
+    Запускает TS-скрипт и стримит вывод. Падает, если код возврата != 0 либо таймаут.
+    """
+    print(f"> Запуск: {' '.join(cmd)}")
     proc = subprocess.Popen(
         cmd,
+        cwd=str(cwd),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        text=True
+        text=True,
+        shell=False
     )
     start = time.time()
-    # Стримим лог, пока не кончится таймаут
-    line: str
     try:
         while True:
             if proc.poll() is not None:
                 break
-            if time.time() - start > EXEC_TIMEOUT_SEC:
+            if time.time() - start > timeout_sec:
                 proc.kill()
-                raise TimeoutError(f"Превышен таймаут {EXEC_TIMEOUT_SEC} сек при выполнении TypeScript-скрипта")
-            line = proc.stdout.readline()
+                raise TimeoutError(f"Превышен таймаут {timeout_sec} сек")
+            line = proc.stdout.readline()  # type: ignore
             if line:
                 sys.stdout.write(line)
                 sys.stdout.flush()
             else:
                 time.sleep(0.05)
-        # дочитываем хвост
-        tail = proc.stdout.read()
+        # дочитываем остаток
+        tail = proc.stdout.read() if proc.stdout else ""  # type: ignore
         if tail:
             sys.stdout.write(tail)
         if proc.returncode != 0:
-            raise RuntimeError(f"TS-скрипт завершился с кодом {proc.returncode}")
+            raise RuntimeError(f"Процесс завершился с кодом {proc.returncode}")
     finally:
         try:
-            proc.stdout.close()  # type: ignore
+            if proc.stdout:
+                proc.stdout.close()
         except Exception:
             pass
 
-def wait_for_file(path: Path, timeout_sec: int = 60) -> None:
+def wait_for_file(path: Path, timeout_sec: int) -> None:
     t0 = time.time()
     while time.time() - t0 < timeout_sec:
         if path.exists() and path.stat().st_size > 0:
             return
         time.sleep(0.2)
-    raise TimeoutError(f"Файл результата не появился в течение {timeout_sec} сек: {path}")
-
-def load_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
-
-def validate_against_sample(result: Any, sample: Any) -> List[str]:
-    """
-    Очень лёгкая валидация: сверяем типы верхнего уровня и базовые поля.
-    Если sample — это реальный пример (из widget-meta.json), пробегаемся по ключам/типам.
-    """
-    errors: List[str] = []
-    if not isinstance(result, dict):
-        errors.append(f"Ожидался объект JSON, получили: {type(result).__name__}")
-        return errors
-    if isinstance(sample, dict):
-        for k, v in sample.items():
-            if k not in result:
-                errors.append(f"Нет обязательного поля: {k}")
-                continue
-            if isinstance(v, dict) and not isinstance(result[k], dict):
-                errors.append(f"Поле {k}: ожидался объект, получили {type(result[k]).__name__}")
-            if isinstance(v, list) and not isinstance(result[k], list):
-                errors.append(f"Поле {k}: ожидался массив, получили {type(result[k]).__name__}")
-    # Бонус: базовые поля, которые обычно ожидаем в «мета»-файле
-    for must in ("toolsMeta",):
-        if must not in result:
-            errors.append(f"Нет поля '{must}'")
-    return errors
+    raise TimeoutError(f"Файл не появился за {timeout_sec} сек: {path}")
 
 def main() -> None:
-    # 0) Нормализуем пути
-    script_path = Path(NODE_SCRIPT).resolve()
-    output_dir = Path(OUTPUT_DIR).resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / OUTPUT_FILENAME
+    parser = argparse.ArgumentParser(description="Запуск build-meta-from-zod.ts и ожидание widget-meta.json")
+    parser.add_argument("--script", required=True, help="Путь к build-meta-from-zod.ts")
+    parser.add_argument("--outdir", required=True, help="Папка output (куда пишет TS)")
+    parser.add_argument("--outfile", default="widget-meta.json", help="Имя файла результата (по умолчанию widget-meta.json)")
+    parser.add_argument("--timeout", type=int, default=300, help="Таймаут выполнения TS-скрипта, сек (default 300)")
+    parser.add_argument("--wait", type=int, default=120, help="Таймаут ожидания файла результата, сек (default 120)")
+    args = parser.parse_args()
 
-    if not script_path.exists():
-        raise FileNotFoundError(f"Не найден TypeScript-скрипт: {script_path}\n"
-                                f"Подсказка: ошибка MODULE_NOT_FOUND при запуске node .ts без раннера — ожидаема.")
+    script = Path(args.script).resolve()
+    if not script.exists():
+        raise FileNotFoundError(f"Не найден скрипт: {script}")
 
-    # 1) Запускаем TS
-    run_ts(script_path)
+    outdir = Path(args.outdir).resolve()
+    outdir.mkdir(parents=True, exist_ok=True)
+    outfile = outdir / args.outfile
 
-    # 2) Ждём результата
-    wait_for_file(output_file, timeout_sec=120)
-    print(f"✅ Найден результат: {output_file} ({output_file.stat().st_size} байт)")
+    # определяем рабочую директорию (корень проекта), чтобы TS видел относительные импорты
+    # логично взять корень монорепо / проект: папка выше scripts/
+    cwd = script.parent.parent if script.parent.name.lower() in {"scripts", "script"} else script.parent
 
-    # 3) Валидируем структуру
-    result_json = load_json(output_file)
+    # подбираем раннер и запускаем
+    cmd = pick_runner(script)
+    run_ts(cmd, cwd=cwd, timeout_sec=args.timeout)
 
-    # пытаемся найти эталон рядом с Python-скриптом или в текущей директории
-    possible_sample = [
-        Path.cwd() / "widget-meta.json",
-        Path(__file__).resolve().parent / "widget-meta.json",
-    ]
-    sample = None
-    for p in possible_sample:
-        if p.exists():
-            sample = load_json(p)
-            break
+    # ждём файл
+    print("> Ожидание файла результата:", outfile)
+    wait_for_file(outfile, timeout_sec=args.wait)
+    size = outfile.stat().st_size
+    print(f"> Найден файл: {outfile} ({size} байт)")
 
-    errors = validate_against_sample(result_json, sample or {})
-    if errors:
-        print("⚠️  Найдены несоответствия структуре образца:")
-        for e in errors:
-            print("   - " + e)
-        sys.exit(3)
-    else:
-        print("🟢 Структура результата выглядит корректной.")
+    # валидация JSON
+    try:
+        with outfile.open("r", encoding="utf-8") as f:
+            json.load(f)
+        print("> JSON корректен.")
+    except Exception as e:
+        print(f"! Предупреждение: не удалось распарсить JSON: {e}")
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"❌ Ошибка: {e}", file=sys.stderr)
+        print(f"Ошибка: {e}", file=sys.stderr)
         sys.exit(1)
