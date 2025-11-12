@@ -40,6 +40,13 @@ import ssl
 import urllib.request
 import urllib.error
 
+
+# ---- compatibility stub (legacy TS runner hook) ----
+def _maybe_run_ts(script_path, project_root, timeout=60):
+    """No-op: STUB for legacy TS runner; kept for compatibility."""
+    return None
+
+
 DEV_BASE_DEFAULT = "https://cms-res-web.online.sberbank.ru/da-sdk-b2c/widget-store/widget-store"
 IFT_BASE_DEFAULT = "https://cms-res-web.iftonline.sberbank.ru/SBERCMS/da-sdk-b2c/widget-store/widget-store"
 DEFAULT_TIMEOUT = 10.0
