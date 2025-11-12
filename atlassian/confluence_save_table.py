@@ -2,24 +2,35 @@
 # -*- coding: utf-8 -*-
 
 """
-Генерирует таблицу для Confluence из widget-meta.json и обновляет страницу,
-не меняя иерархию (НЕ отправляем ancestors в PUT).
+1) Запускает TS-скрипт build-meta-from-zod.ts безопасно для Windows:
+   - приоритет: локальные бинарники: node_modules/.bin/tsx(.cmd) -> ts-node(.cmd)
+   - далее: node --loader ts-node/esm (только если локальный ts-node установлен)
+   - НИКАКОГО npx (часто блокируется корпоративным Nexus и сыплет E401)
+   - фиксим 'charmap' вывод: читаем stdout/stderr в UTF-8 с errors='ignore'
 
-Колонки:
- - name
- - xVersion
- - agents          (массив -> строка через ", ")
- - display_description
- - Storybook (ссылка)
+2) Работает с outdir ОТНОСИТЕЛЬНО ТЕКУЩЕЙ РАБОЧЕЙ ДИРЕКТОРИИ (CWD).
+   - По умолчанию ./output
+   - Папка создаётся, если её нет.
 
-Запуск примеры (Windows):
-  python build_meta_to_confluence_table.py ^
-    --script ".\\widget-store\\scripts\\build-meta-from-zod.ts" ^
-    --outdir ".\\widget-store\\output" ^
-    --outfile "widget-meta.json" ^
-    --page-id 21609790602
-Переменные окружения (обязательно):
-  CONF_URL, CONF_PASS; при Basic ещё CONF_USER
+3) Читает ./output/widget-meta.json, строит таблицу:
+   columns: name | xVersion | agents | display_description | Storybook
+
+   agents:
+     - если у тулза есть поле "agents": превращаем в строку "a, b, c"
+     - иначе берём все доступные значения из верхнего "agent"
+       (если объект — name, если список — join по name/строке)
+
+   Storybook:
+     http://10.53.31.7:6001/public-storybook/?path=/docs/widget-store_widgets-{name_without_underscores}--docs
+
+4) Публикует таблицу на страницу Confluence (storage), НЕ ПЕРЕДАВАЯ ancestors,
+   чтобы не ломать иерархию.
+
+ENV (или задайте флагами):
+  CONF_URL   — https://confluence.company.ru
+  CONF_USER  — логин/email (можно пустым при PAT, тогда просто ":TOKEN")
+  CONF_PASS  — пароль или PAT (обязательно)
+  CONF_PAGE_ID — pageId (по умолчанию 21609790602)
 """
 
 import argparse
@@ -38,140 +49,195 @@ from typing import Any, Dict, List, Optional
 
 # -------------------- запуск TS --------------------
 
-def _which(name: str) -> Optional[str]:
-    return shutil.which(name)
+def _bin_in_project(project_root: Path, name: str) -> List[str]:
+    """
+    Возвращает список путей к локальным бинарникам в node_modules/.bin
+    Учитываем Windows (.cmd).
+    """
+    out: List[str] = []
+    bin_dir = project_root / "node_modules" / ".bin"
+    if os.name == "nt":
+        p = (bin_dir / f"{name}.cmd").resolve()
+        if p.exists():
+            out.append(str(p))
+    p2 = (bin_dir / name).resolve()
+    if p2.exists():
+        out.append(str(p2))
+    return out
 
-def _read_json(path: Path) -> Optional[dict]:
-    try:
-        with path.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return None
-
-def _detect_module_mode(project_root: Path) -> str:
+def _detect_mode(project_root: Path) -> str:
+    """esm | cjs | unknown по package.json/tsconfig.json"""
+    def _read_json(p: Path) -> Optional[dict]:
+        try:
+            with p.open("r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return None
     pkg = _read_json(project_root / "package.json") or {}
     if pkg.get("type") == "module":
         return "esm"
-    tc = _read_json(project_root / "tsconfig.json") or {}
-    comp = (tc.get("compilerOptions") or {})
-    module = (comp.get("module") or "").lower()
-    if module.startswith("es"):
+    tsconfig = _read_json(project_root / "tsconfig.json") or {}
+    comp = (tsconfig.get("compilerOptions") or {})
+    mod = (comp.get("module") or "").lower()
+    if mod.startswith("es"):
         return "esm"
-    if module in {"commonjs", "cjs"}:
+    if mod in {"commonjs", "cjs"}:
         return "cjs"
     return "unknown"
 
-def _candidate_bins(project_root: Path) -> dict:
-    bin_dir = project_root / "node_modules" / ".bin"
-    win = os.name == "nt"
+def run_ts(script: Path, timeout_sec: int) -> None:
+    """
+    Пытаемся запустить TS без npx:
+      1) <project>/node_modules/.bin/tsx(.cmd) <script>
+      2) <project>/node_modules/.bin/ts-node(.cmd) --esm --transpile-only <script> (если ESM/unknown)
+      3) node --loader ts-node/esm <script> (только если локальный ts-node найден)
+      4) <project>/node_modules/.bin/ts-node(.cmd) --transpile-only <script> (для CJS/unknown)
 
-    def variants(name: str) -> List[str]:
-        out = []
-        if win:
-            p = (bin_dir / f"{name}.cmd").resolve()
-            if p.exists():
-                out.append(str(p))
-        p2 = (bin_dir / name).resolve()
-        if p2.exists():
-            out.append(str(p2))
-        sysbin = _which(name)
-        if sysbin:
-            out.append(sysbin)
-        return out
+    Вывод читаем в UTF-8, errors='ignore' (устраняет 'charmap' codec ...).
+    """
+    # project_root — на уровень выше папки scripts/
+    project_root = script.parents[1] if script.parent.name.lower() in {"scripts", "script"} else script.parent
+    cwd = project_root
 
-    return {
-        "tsx": variants("tsx"),
-        "tsnode": variants("ts-node"),
-        "node": variants("node") or ["node"],
-        "npx": variants("npx"),
-    }
+    mode = _detect_mode(project_root)
+    tsx_bins = _bin_in_project(project_root, "tsx")
+    tsnode_bins = _bin_in_project(project_root, "ts-node")
 
-def _pick_runners(script: Path, project_root: Path) -> List[List[str]]:
-    bins = _candidate_bins(project_root)
-    mode = _detect_module_mode(project_root)
+    candidates: List[List[str]] = []
 
-    runners: List[List[str]] = []
+    # 1) TSX локальный
+    for tsx in tsx_bins:
+        candidates.append([tsx, str(script)])
 
-    # 1) TSX (локальный → npx → системный)
-    for tsx in bins["tsx"]:
-        runners.append([tsx, str(script)])
-    if bins["npx"]:
-        runners.append([bins["npx"][0], "-y", "tsx", str(script)])
-
-    # 2) ts-node ESM
+    # 2) ts-node ESM (если режим ESM или неизвестен)
     if mode in ("esm", "unknown"):
-        for tsn in bins["tsnode"]:
-            runners.append([tsn, "--esm", "--transpile-only", str(script)])
-        runners.append([bins["node"][0], "--loader", "ts-node/esm", str(script)])
+        for tsn in tsnode_bins:
+            candidates.append([tsn, "--esm", "--transpile-only", str(script)])
+        # node --loader ts-node/esm — только если есть локальный ts-node
+        if tsnode_bins:
+            node_exe = shutil.which("node") or "node"
+            candidates.append([node_exe, "--loader", "ts-node/esm", str(script)])
 
-    # 3) ts-node CJS
+    # 3) ts-node CJS (для CJS/unknown)
     if mode in ("cjs", "unknown"):
-        for tsn in bins["tsnode"]:
-            runners.append([tsn, "--transpile-only", str(script)])
-        runners.append([bins["node"][0], "-r", "ts-node/register", str(script)])
+        for tsn in tsnode_bins:
+            candidates.append([tsn, "--transpile-only", str(script)])
 
-    # Уникализация по строке
-    uniq, seen = [], set()
-    for r in runners:
-        key = " ".join(r)
-        if key not in seen:
-            seen.add(key)
-            uniq.append(r)
-    return uniq
+    # Последняя страховка: если вообще ничего нет — сообщим явно
+    if not candidates:
+        raise RuntimeError(
+            "Не найден ни tsx, ни ts-node в локальном node_modules/.bin.\n"
+            "Установите один из них в проект:\n"
+            "  npm i -D tsx   (предпочтительно)\n"
+            "или\n"
+            "  npm i -D ts-node\n"
+        )
 
-def _run_stream(cmd: List[str], cwd: Path, timeout_sec: int) -> None:
-    print("> Запуск:", " ".join(cmd))
-    proc = subprocess.Popen(
-        cmd, cwd=str(cwd),
-        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        text=True, shell=False
-    )
-    start = time.time()
-    try:
-        while True:
-            if proc.poll() is not None:
-                break
-            if time.time() - start > timeout_sec:
-                proc.kill()
-                raise TimeoutError(f"Превышен таймаут {timeout_sec} сек")
-            line = proc.stdout.readline()  # type: ignore
-            if line:
-                sys.stdout.write(line)
-                sys.stdout.flush()
-            else:
-                time.sleep(0.05)
-        tail = proc.stdout.read() if proc.stdout else ""  # type: ignore
-        if tail:
-            sys.stdout.write(tail)
-        if proc.returncode != 0:
-            raise RuntimeError(f"Процесс завершился с кодом {proc.returncode}")
-    finally:
+    last_err = None
+    for cmd in candidates:
         try:
-            if proc.stdout:
-                proc.stdout.close()
-        except Exception:
-            pass
-
-def _wait_for_file(path: Path, timeout_sec: int) -> None:
-    t0 = time.time()
-    while time.time() - t0 < timeout_sec:
-        if path.exists() and path.stat().st_size > 0:
+            print("> Запуск:", " ".join(cmd))
+            proc = subprocess.Popen(
+                cmd,
+                cwd=str(cwd),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="ignore",
+                shell=False
+            )
+            start = time.time()
+            while True:
+                if proc.poll() is not None:
+                    break
+                if time.time() - start > timeout_sec:
+                    proc.kill()
+                    raise TimeoutError(f"Превышен таймаут {timeout_sec} сек")
+                line = proc.stdout.readline() if proc.stdout else ""
+                if line:
+                    sys.stdout.write(line)
+                    sys.stdout.flush()
+                else:
+                    time.sleep(0.05)
+            tail = proc.stdout.read() if proc.stdout else ""
+            if tail:
+                sys.stdout.write(tail)
+            if proc.returncode != 0:
+                raise RuntimeError(f"Процесс завершился с кодом {proc.returncode}")
             return
-        time.sleep(0.2)
-    raise TimeoutError(f"Файл не появился за {timeout_sec} сек: {path}")
+        except Exception as e:
+            print(f"! Runner failed: {' '.join(cmd)}")
+            print(f"  Reason: {e}")
+            last_err = e
+            continue
+    raise RuntimeError(f"Не удалось запустить TypeScript-скрипт ни одним способом. Последняя ошибка: {last_err}")
 
-# -------------------- рендер таблицы --------------------
+# -------------------- JSON и рендер --------------------
 
 def _safe(v: Any) -> str:
     return html.escape("" if v is None else str(v))
 
-def _story_link(name: str) -> str:
-    # Удаляем подчёркивания как раньше
+def storybook_link(name: str) -> str:
     slug = (name or "").replace("_", "")
     url = f"http://10.53.31.7:6001/public-storybook/?path=/docs/widget-store_widgets-{slug}--docs"
     return f'<a href="{_safe(url)}">{_safe(url)}</a>'
 
-def render_table_html(rows: List[Dict[str, Any]]) -> str:
+def extract_agents_for_row(root: Dict[str, Any], tool: Dict[str, Any]) -> str:
+    """
+    Возвращает строку для колонки 'agents'.
+    Приоритет:
+      1) tool["agents"] (список/строка)
+      2) root["agent"] (если dict -> name; если список -> join по name/строке; если строка -> она)
+    """
+    # 1) из тулза
+    a = tool.get("agents")
+    if isinstance(a, list):
+        vals = []
+        for x in a:
+            if isinstance(x, dict) and "name" in x:
+                vals.append(str(x["name"]))
+            else:
+                vals.append(str(x))
+        if vals:
+            return ", ".join(vals)
+    elif isinstance(a, dict):
+        if "name" in a:
+            return str(a["name"])
+    elif isinstance(a, str):
+        if a.strip():
+            return a.strip()
+
+    # 2) из корня
+    root_agent = root.get("agent")
+    if isinstance(root_agent, dict):
+        n = root_agent.get("name")
+        if n:
+            return str(n)
+    elif isinstance(root_agent, list):
+        vals = []
+        for x in root_agent:
+            if isinstance(x, dict) and "name" in x:
+                vals.append(str(x["name"]))
+            else:
+                vals.append(str(x))
+        if vals:
+            return ", ".join(vals)
+    elif isinstance(root_agent, str):
+        if root_agent.strip():
+            return root_agent.strip()
+    return ""
+
+def build_table_html(root: Dict[str, Any]) -> str:
+    """
+    Формируем таблицу Confluence (storage):
+      name | xVersion | agents | display_description | Storybook
+    Берём данные из root["toolsMeta"] (список объектов).
+    """
+    tools = root.get("toolsMeta")
+    if not isinstance(tools, list) or not tools:
+        raise RuntimeError("В JSON не найден непустой список toolsMeta")
+
     head = """
 <table class="wrapped">
   <colgroup><col/><col/><col/><col/><col/></colgroup>
@@ -185,25 +251,22 @@ def render_table_html(rows: List[Dict[str, Any]]) -> str:
     </tr>
 """.rstrip()
 
-    body_rows: List[str] = []
-    for r in rows:
-        name = str(r.get("name") or "")
-        xver = r.get("xVersion")
-        agents = r.get("agents")
-        descr = r.get("display_description")
+    rows: List[str] = []
+    for t in tools:
+        if not isinstance(t, dict):
+            continue
+        name = str(t.get("name") or "")
+        xver = t.get("xVersion")
+        agents_str = extract_agents_for_row(root, t)
+        desc = t.get("display_description") or t.get("displayDescription") or ""
 
-        if isinstance(agents, list):
-            agents_cell = _safe(", ".join(map(str, agents)))
-        else:
-            agents_cell = _safe("" if agents is None else agents)
-
-        body_rows.append(
+        rows.append(
 f"""    <tr>
       <td>{_safe(name)}</td>
-      <td>{_safe("" if xver is None else xver)}</td>
-      <td>{agents_cell}</td>
-      <td>{_safe(descr)}</td>
-      <td>{_story_link(name)}</td>
+      <td>{_safe(xver if xver is not None else "")}</td>
+      <td>{_safe(agents_str)}</td>
+      <td>{_safe(desc)}</td>
+      <td>{storybook_link(name) if name else ""}</td>
     </tr>"""
         )
 
@@ -212,7 +275,7 @@ f"""    <tr>
 </table>
 """.lstrip()
 
-    return "\n".join([head] + body_rows + [tail])
+    return "\n".join([head] + rows + [tail])
 
 # -------------------- Confluence REST --------------------
 
@@ -241,9 +304,9 @@ def confluence_get_page(conf_url: str, auth: str, page_id: int) -> Dict[str, Any
     headers = {"Accept": "application/json", "Authorization": auth}
     return _http("GET", url, headers)
 
-def confluence_put_storage_preserve_parent(conf_url: str, auth: str, page_id: int, title: str, html_body: str, next_version: int, message: str = "") -> Dict[str, Any]:
+def confluence_put_storage(conf_url: str, auth: str, page_id: int, title: str, html_body: str, next_version: int, message: str = "") -> Dict[str, Any]:
     """
-    ВАЖНО: ancestors НЕ передаём -> родитель остаётся прежним, иерархия не ломается.
+    ВАЖНО: ancestors НЕ ПЕРЕДАЁМ, чтобы НЕ ломать иерархию.
     """
     url = f"{conf_url}/rest/api/content/{page_id}"
     payload = {
@@ -261,107 +324,81 @@ def confluence_put_storage_preserve_parent(conf_url: str, auth: str, page_id: in
     }
     return _http("PUT", url, headers, data=data)
 
-# -------------------- main --------------------
+# -------------------- MAIN --------------------
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Собрать таблицу из widget-meta.json и записать в Confluence (без смены родителя)")
-    ap.add_argument("--script", required=True, help="Путь к build-meta-from-zod.ts")
-    ap.add_argument("--outdir", required=True, help="Папка output (относительно ТЕКУЩЕЙ рабочей директории; будет создана при необходимости)")
-    ap.add_argument("--outfile", default="widget-meta.json", help="Имя JSON файла (по умолчанию widget-meta.json)")
-    ap.add_argument("--timeout", type=int, default=300, help="Таймаут выполнения TS, сек")
-    ap.add_argument("--wait", type=int, default=120, help="Таймаут ожидания JSON, сек")
-    ap.add_argument("--page-id", type=int, required=True, help="Confluence pageId")
+    ap = argparse.ArgumentParser(description="build-meta → widget-meta.json → таблица → Confluence")
+    ap.add_argument("--script", required=True, help="Путь к scripts/build-meta-from-zod.ts")
+    ap.add_argument("--outdir", default="./output", help="Папка для JSON ОТНОСИТЕЛЬНО ТЕКУЩЕЙ ДИРЕКТОРИИ (default ./output)")
+    ap.add_argument("--outfile", default="widget-meta.json", help="Имя файла JSON (default widget-meta.json)")
+    ap.add_argument("--timeout", type=int, default=300, help="Таймаут TS, сек (default 300)")
+    ap.add_argument("--wait", type=int, default=120, help="Таймаут ожидания JSON, сек (default 120)")
+    ap.add_argument("--page-id", type=int, default=int(os.getenv("CONF_PAGE_ID", "21609790602")), help="Confluence pageId")
     args = ap.parse_args()
 
-    # --- пути ---
+    # 1) пути
     script = Path(args.script).resolve()
     if not script.exists():
         raise FileNotFoundError(f"Не найден скрипт: {script}")
 
-    # outdir — ОТНОСИТЕЛЬНО ТЕКУЩЕЙ РАБОЧЕЙ ДИРЕКТОРИИ (cwd)
-    outdir = Path(args.outdir)
-    if not outdir.is_absolute():
-        outdir = Path.cwd() / outdir
+    # outdir — ОТНОСИТЕЛЬНО ТЕКУЩЕЙ ДИРЕКТОРИИ
+    outdir = (Path.cwd() / Path(args.outdir)).resolve()
     outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / args.outfile
 
-    # предполагаемый корень проекта (важно для относительных импортов в TS)
-    project_root = script.parents[1] if script.parent.name.lower() in {"scripts", "script"} else script.parent
-    cwd = project_root
-
-    # --- запуск TS ---
-    runners = _pick_runners(script, project_root)
-    last_err = None
-    for cmd in runners:
-        try:
-            _run_stream(cmd, cwd=cwd, timeout_sec=args.timeout)
-            last_err = None
-            break
-        except Exception as e:
-            print(f"! Runner failed: {' '.join(cmd)}")
-            print(f"  Reason: {e}")
-            last_err = e
-            continue
-    if last_err:
-        raise RuntimeError("Не удалось запустить TypeScript-скрипт ни одним раннером (tsx/ts-node/node).")
-
-    # --- ожидание файла ---
+    # 2) запускаем TS (без npx), ждём JSON
+    run_ts(script, timeout_sec=args.timeout)
     print("> Ожидание файла:", outfile)
-    _wait_for_file(outfile, timeout_sec=args.wait)
+    t0 = time.time()
+    while time.time() - t0 < args.wait:
+        if outfile.exists() and outfile.stat().st_size > 0:
+            break
+        time.sleep(0.2)
+    if not outfile.exists():
+        raise TimeoutError(f"Файл не появился за {args.wait} сек: {outfile}")
     print(f"> Найден файл: {outfile} ({outfile.stat().st_size} bytes)")
 
-    # --- читаем JSON и готовим таблицу ---
+    # 3) читаем JSON
     try:
         with outfile.open("r", encoding="utf-8") as f:
             data = json.load(f)
     except Exception as e:
         raise RuntimeError(f"Не удалось прочитать JSON: {e}")
 
-    # источник данных: toolsMeta на верхнем уровне. Поддержим agents/description, если встречаются в элементах.
-    tools = data.get("toolsMeta")
-    if not isinstance(tools, list) or not tools:
-        raise RuntimeError("В JSON отсутствует непустой массив 'toolsMeta'.")
+    if not isinstance(data, dict):
+        data = {"data": data}
 
-    rows: List[Dict[str, Any]] = []
-    for t in tools:
-        if not isinstance(t, dict):
-            continue
-        name = t.get("name")
-        xver = t.get("xVersion")
-        agents = t.get("agents")  # ожидается list[str] или str
-        descr = t.get("display_description")
-        if name is None:
-            continue
-        rows.append({
-            "name": name,
-            "xVersion": xver,
-            "agents": agents,
-            "display_description": descr
-        })
+    # 4) строим HTML-таблицу
+    table_html = build_table_html(data)
+    ts = time.strftime("%Y-%m-%d %H:%M:%S")
+    page_html = f"""
+<p><strong>Widget meta</strong> — обновлено: {html.escape(ts)}</p>
+{table_html}
+""".strip()
 
-    table_html = render_table_html(rows)
-
-    # --- Confluence creds ---
+    # 5) Confluence creds
     conf_url = os.getenv("CONF_URL")
     conf_user = os.getenv("CONF_USER")
     conf_pass = os.getenv("CONF_PASS")
+    page_id = args.page_id
+
     if not conf_url or not conf_pass:
-        raise RuntimeError("Задайте переменные окружения CONF_URL и CONF_PASS (и при Basic — CONF_USER).")
+        raise RuntimeError("Задайте ENV: CONF_URL и CONF_PASS (и при Basic — CONF_USER).")
+
     auth = _auth_header(conf_user, conf_pass)
 
-    # --- читаем страницу (чтобы взять title и версию) ---
-    page = confluence_get_page(conf_url, auth, args.page_id)
-    title = page.get("title") or f"Page {args.page_id}"
+    # 6) читаем текущую страницу (без ancestors) и записываем новую версию
+    page = confluence_get_page(conf_url, auth, page_id)
+    title = page.get("title") or f"Page {page_id}"
     next_version = int(page.get("version", {}).get("number", 0)) + 1
 
-    # --- важное: НЕ передаём ancestors, чтобы не трогать родителя ---
-    _ = confluence_put_storage_preserve_parent(
-        conf_url, auth, args.page_id,
-        title, table_html, next_version,
-        message="Автообновление таблицы (name, xVersion, agents, display_description, Storybook)"
+    _ = confluence_put_storage(
+        conf_url, auth, page_id,
+        title, page_html, next_version,
+        message="Автообновление таблицы widget-meta.json"
     )
 
-    print(f"✅ Обновлено: pageId={args.page_id} (версия {next_version})")
+    print(f"✅ Обновлено: pageId={page_id} (версия {next_version})")
 
 if __name__ == "__main__":
     try:
