@@ -33,14 +33,88 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# импорт утилиты проверки присутствия виджета на DEV/IFT
-try:
-    import widget_presence  # из соседнего файла
-except Exception as _e_wp:
-    widget_presence = None
-    _WIDGET_PRESENCE_IMPORT_ERROR = _e_wp
-else:
-    _WIDGET_PRESENCE_IMPORT_ERROR = None
+# -------------------- DEV/IFT presence logic (inlined, no imports) --------------------
+import ssl
+import urllib.request
+import urllib.error
+
+DEV_BASE_DEFAULT = "https://cms-res-web.online.sberbank.ru/da-sdk-b2c/widget-store/widget-store"
+IFT_BASE_DEFAULT = "https://cms-res-web.iftonline.sberbank.ru/SBERCMS/da-sdk-b2c/widget-store/widget-store"
+DEFAULT_TIMEOUT = 10.0
+
+_SSL_CONTEXT = ssl.create_default_context()
+_SSL_CONTEXT.check_hostname = False
+_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+
+def _normalize_widget_name(name: str) -> str:
+    # привести к "kebab-case": латиница/цифры/-, без пробелов/подчёркиваний
+    n = (name or "").strip().lower().replace("_", "-").replace(" ", "-")
+    while "--" in n:
+        n = n.replace("--", "-")
+    return n
+
+def _build_url(base: str, widget: str, version: int, filename: str) -> str:
+    base = base.rstrip("/")
+    widget = _normalize_widget_name(widget)
+    fn = filename.lstrip("/")
+    return f"{base}/{widget}/{version}/{fn}"
+
+def _fetch_json(url: str, timeout: float = DEFAULT_TIMEOUT):
+    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
+            data = resp.read().decode("utf-8", "ignore")
+            try:
+                return {"ok": True, "status": resp.status, "json": json.loads(data)}
+            except Exception as e:
+                return {"ok": False, "status": resp.status, "error": f"Invalid JSON: {e}"}
+    except urllib.error.HTTPError as e:
+        return {"ok": False, "status": e.code, "error": f"HTTP {e.code}"}
+    except Exception as e:
+        return {"ok": False, "status": None, "error": str(e)}
+
+def _head_request(url: str, timeout: float = DEFAULT_TIMEOUT):
+    req = urllib.request.Request(url, method="HEAD")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
+            return {"ok": 200 <= resp.status < 400, "status": resp.status}
+    except urllib.error.HTTPError as e:
+        return {"ok": False, "status": e.code}
+    except Exception as e:
+        return {"ok": False, "status": None, "error": str(e)}
+
+def _check_widget_in_environment(widget: str, version: int, base_url: str, environment: str, timeout: float = DEFAULT_TIMEOUT):
+    stats_url = _build_url(base_url, widget, version, "mf-stats.json")
+    container_url = _build_url(base_url, widget, version, "container.js")
+    stats = _fetch_json(stats_url, timeout)
+    head = _head_request(container_url, timeout)
+    present = bool(stats.get("ok") and head.get("ok"))
+    return {
+        "environment": environment,
+        "widget": _normalize_widget_name(widget),
+        "version": version,
+        "present": present,
+        "stats_url": stats_url,
+        "container_url": container_url,
+        "stats_ok": stats.get("ok"),
+        "head_ok": head.get("ok"),
+        "error": stats.get("error") if not stats.get("ok") else None
+    }
+
+def check_widget(widget: str, version: int, dev_base: str = DEV_BASE_DEFAULT, ift_base: str = IFT_BASE_DEFAULT, timeout: float = DEFAULT_TIMEOUT):
+    dev = _check_widget_in_environment(widget, int(version), dev_base, "DEV", timeout)
+    ift = _check_widget_in_environment(widget, int(version), ift_base, "IFT", timeout)
+    return {
+        "normalized_name": _normalize_widget_name(widget),
+        "version": int(version),
+        "dev_present": dev["present"],
+        "ift_present": ift["present"],
+        "dev_url": dev["container_url"],
+        "ift_url": ift["container_url"],
+        "dev_stats_url": dev["stats_url"],
+        "ift_stats_url": ift["stats_url"],
+    }
+
 
 # -------------------- запуск TS --------------------
 
@@ -236,12 +310,12 @@ def _presence_for_item(it: Dict[str, Any], timeout: float = 8.0) -> Dict[str, An
     out.setdefault("ift_url", None)
     if not name or version_int is None:
         return out
-    if widget_presence is None or not hasattr(widget_presence, "check_widget"):
+    if False:  # widget_presence is inlined; this branch will never execute
         # импорт не удался — оставляем пустые поля
         out["presence_error"] = f"widget_presence import failed: {_WIDGET_PRESENCE_IMPORT_ERROR!s}" if _WIDGET_PRESENCE_IMPORT_ERROR else "widget_presence unavailable"
         return out
     try:
-        res = widget_presence.check_widget(name, version_int, timeout=timeout)  # type: ignore[attr-defined]
+        res = check_widget(name, version_int, timeout=timeout)
         out["dev_present"] = bool(res.get("dev_present")) if res.get("dev_present") is not None else None
         out["ift_present"] = bool(res.get("ift_present")) if res.get("ift_present") is not None else None
         out["dev_url"] = res.get("dev_url")
@@ -394,9 +468,9 @@ def main() -> None:
 """.strip()
 
     # --- отправляем в Confluence ---
-    conf_url = 'https://confluence.sberbank.ru'
-    conf_user = '19060455'
-    conf_pass = '19#MOSiad#24'
+    conf_url = ''
+    conf_user = ''
+    conf_pass = ''
     page_id = args.page_id
     if not conf_url or not conf_pass:
         raise RuntimeError("Нужно задать ENV: CONF_URL и CONF_PASS (и при Basic — CONF_USER).")
