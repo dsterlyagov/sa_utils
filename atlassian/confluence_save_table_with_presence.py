@@ -40,6 +40,46 @@ import ssl
 import urllib.request
 import urllib.error
 
+# ---- helpers for HTML escaping & table fields ----
+import html
+
+def _safe(v: Any) -> str:
+    return html.escape("" if v is None else str(v))
+
+def _extract_display_description(item: Dict[str, Any]) -> str:
+    # 1) xMeta.display_description
+    xmeta = item.get("xMeta")
+    if isinstance(xmeta, dict) and isinstance(xmeta.get("display_description"), str):
+        return xmeta["display_description"]
+    # 2) xPayload (stringified JSON)
+    xpayload = item.get("xPayload")
+    if isinstance(xpayload, str):
+        try:
+            obj = json.loads(xpayload)
+            if isinstance(obj, dict) and isinstance(obj.get("display_description"), str):
+                return obj["display_description"]
+        except Exception:
+            pass
+    return ""
+
+def _agents_list(item: Dict[str, Any]) -> str:
+    agents = item.get("agents")
+    if not isinstance(agents, list):
+        return ""
+    names: list[str] = []
+    for a in agents:
+        if isinstance(a, dict):
+            n = a.get("name")
+            if n:
+                names.append(str(n))
+    return ", ".join(names)
+
+def _storybook_link(name: str) -> str:
+    slug = (name or "").replace("_", "")
+    url = f"http://10.53.31.7:6001/public-storybook/?path=/docs/widget-store_widgets-{slug}--docs"
+    return f'<a href="{_safe(url)}">{_safe(url)}</a>'
+
+
 
 # ---- compatibility stub (legacy TS runner hook) ----
 def _maybe_run_ts(script_path, project_root, timeout=60):
