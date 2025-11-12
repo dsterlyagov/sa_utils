@@ -33,6 +33,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+
+
 # -------------------- DEV/IFT presence logic (inlined, no imports) --------------------
 import ssl
 import urllib.request
@@ -46,254 +48,150 @@ _SSL_CONTEXT = ssl.create_default_context()
 _SSL_CONTEXT.check_hostname = False
 _SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
-def _normalize_widget_name(name: str) -> str:
-    # привести к "kebab-case": латиница/цифры/-, без пробелов/подчёркиваний
-    n = (name or "").strip().lower().replace("_", "-").replace(" ", "-")
-    while "--" in n:
-        n = n.replace("--", "-")
-    return n
+def _norm_kebab(s: str) -> str:
+    s = (s or "").strip().lower().replace("_", "-").replace(" ", "-")
+    while "--" in s:
+        s = s.replace("--", "-")
+    return s
 
-def _build_url(base: str, widget: str, version: int, filename: str) -> str:
+def _slug_variants(name: str):
+    n = (name or "").strip()
+    low = n.lower()
+    kebab = _norm_kebab(n)
+    no_underscore = low.replace("_", "")
+    uniq = []
+    for s in [n, low, kebab, no_underscore]:
+        if s and s not in uniq:
+            uniq.append(s)
+    return uniq
+
+def _build_candidates(base: str, widget: str, version: int, filename: str):
     base = base.rstrip("/")
-    widget = _normalize_widget_name(widget)
     fn = filename.lstrip("/")
-    return f"{base}/{widget}/{version}/{fn}"
+    v = str(version)
+    variants = _slug_variants(widget)
+    urls = []
+
+    # 1) Base without widget segment (matches your example)
+    urls.append(f"{base}/{v}/{fn}")
+
+    # 2) Common shapes with widget segment
+    for w in variants:
+        urls.append(f"{base}/{w}/{v}/{fn}")          # .../widget/version/file
+        urls.append(f"{base}/{v}/{w}/{fn}")          # .../version/widget/file
+        urls.append(f"{base}/{w}/v{v}/{fn}")         # .../widget/vX/file
+
+    # de-dup
+    out = []
+    for u in urls:
+        if u not in out:
+            out.append(u)
+    return out
+
+def _http_get(url: str, timeout: float = DEFAULT_TIMEOUT):
+    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
+        return getattr(resp, "status", 200), resp.read()
 
 def _fetch_json(url: str, timeout: float = DEFAULT_TIMEOUT):
-    req = urllib.request.Request(url, headers={"Accept": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
-            data = resp.read().decode("utf-8", "ignore")
-            try:
-                return {"ok": True, "status": resp.status, "json": json.loads(data)}
-            except Exception as e:
-                return {"ok": False, "status": resp.status, "error": f"Invalid JSON: {e}"}
+        status, body = _http_get(url, timeout)
+        return {"ok": 200 <= status < 400, "status": status, "json": json.loads(body.decode("utf-8", "ignore"))}
     except urllib.error.HTTPError as e:
-        return {"ok": False, "status": e.code, "error": f"HTTP {e.code}"}
+        return {"ok": False, "status": getattr(e, "code", None), "error": f"HTTP {getattr(e, 'code', '')}"}
     except Exception as e:
         return {"ok": False, "status": None, "error": str(e)}
 
-def _head_request(url: str, timeout: float = DEFAULT_TIMEOUT):
-    req = urllib.request.Request(url, method="HEAD")
+def _head_ok(url: str, timeout: float = DEFAULT_TIMEOUT):
     try:
+        req = urllib.request.Request(url, method="HEAD")
         with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
-            return {"ok": 200 <= resp.status < 400, "status": resp.status}
+            return 200 <= getattr(resp, "status", 200) < 400, getattr(resp, "status", 200), None
     except urllib.error.HTTPError as e:
-        return {"ok": False, "status": e.code}
+        return False, getattr(e, "code", None), f"HTTP {getattr(e, 'code', '')}"
     except Exception as e:
-        return {"ok": False, "status": None, "error": str(e)}
+        return False, None, str(e)
+
+def _exposes_has_widget(stats_json: dict, widget: str) -> bool:
+    """Heuristically check if mf-stats.json exposes the widget. We normalize keys like './foo' to 'foo' kebab-case."""
+    if not isinstance(stats_json, dict):
+        return False
+    exposes = stats_json.get("exposes") or stats_json.get("exposed") or {}
+    if not isinstance(exposes, dict):
+        return False
+    target = _norm_kebab(widget).strip("/.")
+    for k in list(exposes.keys()):
+        key = str(k).lstrip("./")
+        # Normalize typical PascalCase too (split before capitals)
+        keb = _norm_kebab(re.sub(r"(?<!^)([A-Z])", r"-\1", key))
+        if keb == target:
+            return True
+        # also allow './widget-store/<name>' style
+        if keb.endswith("/" + target):
+            return True
+    return False
 
 def _check_widget_in_environment(widget: str, version: int, base_url: str, environment: str, timeout: float = DEFAULT_TIMEOUT):
-    stats_url = _build_url(base_url, widget, version, "mf-stats.json")
-    container_url = _build_url(base_url, widget, version, "container.js")
-    stats = _fetch_json(stats_url, timeout)
-    head = _head_request(container_url, timeout)
-    present = bool(stats.get("ok") and head.get("ok"))
+    stats_present = False
+    container_present = False
+    chosen_stats = None
+    chosen_container = None
+    last_error = None
+    listed_in_exposes = False
+
+    # mf-stats.json: try shapes and also verify 'exposes' contains the widget
+    for stats_url in _build_candidates(base_url, widget, version, "mf-stats.json"):
+        res = _fetch_json(stats_url, timeout)
+        if res.get("ok"):
+            chosen_stats = stats_url
+            stats_present = True
+            try:
+                listed_in_exposes = _exposes_has_widget(res.get("json", {}), widget)
+            except Exception:
+                listed_in_exposes = False
+            break
+        last_error = res.get("error") or last_error
+
+    # container.js HEAD
+    for container_url in _build_candidates(base_url, widget, version, "container.js"):
+        ok2, _, err2 = _head_ok(container_url, timeout)
+        if ok2:
+            container_present = True
+            chosen_container = container_url
+            break
+        last_error = err2 or last_error
+
+    present = stats_present and container_present and listed_in_exposes
     return {
         "environment": environment,
-        "widget": _normalize_widget_name(widget),
+        "widget": widget,
         "version": version,
         "present": present,
-        "stats_url": stats_url,
-        "container_url": container_url,
-        "stats_ok": stats.get("ok"),
-        "head_ok": head.get("ok"),
-        "error": stats.get("error") if not stats.get("ok") else None
+        "stats_url": chosen_stats,
+        "container_url": chosen_container,
+        "error": last_error,
+        "stats_ok": stats_present,
+        "head_ok": container_present,
+        "listed_in_exposes": listed_in_exposes,
     }
 
 def check_widget(widget: str, version: int, dev_base: str = DEV_BASE_DEFAULT, ift_base: str = IFT_BASE_DEFAULT, timeout: float = DEFAULT_TIMEOUT):
-    dev = _check_widget_in_environment(widget, int(version), dev_base, "DEV", timeout)
-    ift = _check_widget_in_environment(widget, int(version), ift_base, "IFT", timeout)
+    version = int(version)
+    dev = _check_widget_in_environment(widget, version, dev_base, "DEV", timeout)
+    ift = _check_widget_in_environment(widget, version, ift_base, "IFT", timeout)
     return {
-        "normalized_name": _normalize_widget_name(widget),
-        "version": int(version),
+        "normalized_name": _norm_kebab(widget),
+        "version": version,
         "dev_present": dev["present"],
         "ift_present": ift["present"],
         "dev_url": dev["container_url"],
         "ift_url": ift["container_url"],
         "dev_stats_url": dev["stats_url"],
         "ift_stats_url": ift["stats_url"],
+        "error": dev.get("error") or ift.get("error"),
+        "dev_listed": dev.get("listed_in_exposes"),
+        "ift_listed": ift.get("listed_in_exposes"),
     }
-
-
-# -------------------- запуск TS --------------------
-
-def _read_json(path: Path) -> Optional[dict]:
-    try:
-        with path.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return None
-
-def _detect_module_mode(project_root: Path) -> str:
-    """esm | cjs | unknown"""
-    pkg = _read_json(project_root / "package.json") or {}
-    if pkg.get("type") == "module":
-        return "esm"
-    tsconfig = _read_json(project_root / "tsconfig.json") or {}
-    comp = (tsconfig.get("compilerOptions") or {})
-    module = (comp.get("module") or "").lower()
-    if module.startswith("es"):
-        return "esm"
-    if module in {"commonjs", "cjs"}:
-        return "cjs"
-    return "unknown"
-
-def _candidate_bins(project_root: Path) -> dict:
-    """пути к бинарям из node_modules/.bin + системные"""
-    bin_dir = project_root / "node_modules" / ".bin"
-    win = os.name == "nt"
-
-    def variants(name: str) -> List[str]:
-        out = []
-        if win:
-            p = (bin_dir / f"{name}.cmd").resolve()
-            if p.exists():
-                out.append(str(p))
-        p2 = (bin_dir / name).resolve()
-        if p2.exists():
-            out.append(str(p2))
-        sysbin = shutil.which(name)
-        if sysbin:
-            out.append(sysbin)
-        return out
-
-    return {
-        "tsx":   variants("tsx"),
-        "tsnode": variants("ts-node"),
-        "node":  variants("node") or ["node"],
-        "npx":   variants("npx"),
-    }
-
-def _pick_runners(script: Path, project_root: Path) -> List[List[str]]:
-    """возвращает список команд (argv) по убыванию приоритета"""
-    bins = _candidate_bins(project_root)
-    mode = _detect_module_mode(project_root)
-
-    runners: List[List[str]] = []
-
-    # 1) TSX (локальный — приоритетней; затем npx; затем системный)
-    for tsx in bins["tsx"]:
-        runners.append([tsx, str(script)])
-    if bins["npx"]:
-        runners.append([bins["npx"][0], "-y", "tsx", str(script)])
-
-    # 2) ESM-варианты ts-node
-    if mode in ("esm", "unknown"):
-        for tsn in bins["tsnode"]:
-            runners.append([tsn, "--esm", "--transpile-only", str(script)])
-        runners.append([bins["node"][0], "--loader", "ts-node/esm", str(script)])
-
-    # 3) CJS-варианты ts-node
-    if mode in ("cjs", "unknown"):
-        for tsn in bins["tsnode"]:
-            runners.append([tsn, "--transpile-only", str(script)])
-        runners.append([bins["node"][0], "-r", "ts-node/register", str(script)])
-
-    # Уникализируем
-    uniq, seen = [], set()
-    for r in runners:
-        key = " ".join(r)
-        if key not in seen:
-            seen.add(key)
-            uniq.append(r)
-    return uniq
-
-def _run_stream(cmd: List[str], cwd: Path, timeout_sec: int) -> None:
-    """стримим stdout/stderr в кодировке UTF-8 с игнором ошибок, чтобы избежать 'charmap'"""
-    print("> Запуск:", " ".join(cmd))
-    proc = subprocess.Popen(
-        cmd, cwd=str(cwd),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        shell=False
-    )
-    start = time.time()
-    try:
-        while True:
-            if proc.poll() is not None:
-                break
-            if time.time() - start > timeout_sec:
-                proc.kill()
-                raise TimeoutError(f"Превышен таймаут {timeout_sec} сек")
-            line = proc.stdout.readline()  # type: ignore
-            if line:
-                sys.stdout.write(line)
-                sys.stdout.flush()
-            else:
-                time.sleep(0.05)
-        tail = proc.stdout.read() if proc.stdout else ""  # type: ignore
-        if tail:
-            sys.stdout.write(tail)
-        if proc.returncode != 0:
-            raise RuntimeError(f"Процесс завершился с кодом {proc.returncode}")
-    finally:
-        try:
-            if proc.stdout:
-                proc.stdout.close()
-        except Exception:
-            pass
-
-def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
-    """
-    Пытаемся запустить TS. Если нет ни одного рабочего раннера — просто сообщаем и продолжаем:
-    будем читать уже существующий widget-meta.json.
-    """
-    for cmd in _pick_runners(script, project_root):
-        try:
-            _run_stream(cmd, cwd=project_root, timeout_sec=timeout)
-            return
-        except Exception as e:
-            print(f"! Runner failed: {' '.join(cmd)}")
-            print(f"  Reason: {e}")
-            continue
-    print("! Не удалось запустить TS-скрипт ни одним раннером — пропускаю запуск и использую существующий JSON.")
-
-# -------------------- таблица и маппинг полей --------------------
-
-def _safe(v: Any) -> str:
-    return html.escape("" if v is None else str(v))
-
-def _extract_display_description(item: Dict[str, Any]) -> str:
-    # 1) xMeta.display_description
-    xmeta = item.get("xMeta")
-    if isinstance(xmeta, dict) and isinstance(xmeta.get("display_description"), str):
-        return xmeta["display_description"]
-
-    # 2) xPayload (строка-JSON)
-    xpayload = item.get("xPayload")
-    if isinstance(xpayload, str):
-        try:
-            obj = json.loads(xpayload)
-            if isinstance(obj, dict) and isinstance(obj.get("display_description"), str):
-                return obj["display_description"]
-        except Exception:
-            pass
-
-    # 3) пусто
-    return ""
-
-def _agents_list(item: Dict[str, Any]) -> str:
-    agents = item.get("agents")
-    if not isinstance(agents, list):
-        return ""
-    names = []
-    for a in agents:
-        if isinstance(a, dict):
-            n = a.get("name")
-            if n:
-                names.append(str(n))
-    return ", ".join(names)
-
-def _storybook_link(name: str) -> str:
-    # как ранее: убираем underscore и подставляем в path
-    slug = (name or "").replace("_", "")
-    url = f"http://10.53.31.7:6001/public-storybook/?path=/docs/widget-store_widgets-{slug}--docs"
-    return f'<a href="{_safe(url)}">{_safe(url)}</a>'
-
 
 def _presence_for_item(it: Dict[str, Any], timeout: float = 8.0) -> Dict[str, Any]:
     """Дополнить элемент полями доступности на DEV/IFT (dev_present, ift_present, dev_url, ift_url)."""
