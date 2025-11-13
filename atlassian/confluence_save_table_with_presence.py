@@ -3,7 +3,7 @@
 
 """
 Запускает build-meta-from-zod.ts (если доступен раннер), читает JSON из --outdir/--outfile,
-строит таблицу (name, xVersion, agents, display_description, Storybook) и записывает в Confluence.
+строит таблицу (name, xVersion, DEV, IFT, agents, display_description, Storybook) и записывает в Confluence.
 
 ENV:
   CONF_URL       — https://confluence.example.com
@@ -16,6 +16,7 @@ ENV:
     --script .\widget-store\scripts\build-meta-from-zod.ts ^
     --outdir .\widget-store\output ^
     --outfile widget-meta.json ^
+    --presence-json .\published-widgets.json ^
     --page-id 21609790602
 """
 
@@ -31,217 +32,253 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
+
+# импорт утилиты проверки присутствия виджета на DEV/IFT
+try:
+    import widget_presence  # из соседнего файла
+except Exception as _e_wp:
+    widget_presence = None
+    _WIDGET_PRESENCE_IMPORT_ERROR = _e_wp
+else:
+    _WIDGET_PRESENCE_IMPORT_ERROR = None
+
+# -------------------- запуск TS --------------------
 
 
+def _project_root_from_script(script_path: Path) -> Path:
+    """
+    Пытаемся найти корень проекта по расположению скрипта:
+      widget-store/scripts/build-meta-from-zod.ts
+    => корень widget-store
+    """
+    # build-meta-from-zod.ts обычно лежит в widget-store/scripts
+    # корень проекта — родитель scripts
+    return script_path.parent.parent
 
-# -------------------- DEV/IFT presence logic (inlined, no imports) --------------------
-import ssl
-import urllib.request
-import urllib.error
 
-# ---- helpers for HTML escaping & table fields ----
-import html
+def _read_json(path: Path) -> Any:
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
+    except Exception:
+        return None
 
-def _safe(v: Any) -> str:
-    return html.escape("" if v is None else str(v))
+
+def _detect_module_type(project_root: Path) -> str:
+    """esm | cjs | unknown"""
+    pkg = _read_json(project_root / "package.json") or {}
+    if pkg.get("type") == "module":
+        return "esm"
+    tsconfig = _read_json(project_root / "tsconfig.json") or {}
+    comp = (tsconfig.get("compilerOptions") or {})
+    module = (comp.get("module") or "").lower()
+    if module.startswith("es"):
+        return "esm"
+    if module in {"commonjs", "cjs"}:
+        return "cjs"
+    return "unknown"
+
+
+def _candidate_bins(project_root: Path) -> dict:
+    """пути к бинарям из node_modules/.bin + системные"""
+    bin_dir = project_root / "node_modules" / ".bin"
+    win = os.name == "nt"
+
+    def variants(name: str) -> List[str]:
+        out = []
+        if win:
+            p = (bin_dir / f"{name}.cmd").resolve()
+            if p.exists():
+                out.append(str(p))
+        p2 = (bin_dir / name).resolve()
+        if p2.exists():
+            out.append(str(p2))
+        # системные
+        out.append(name)
+        return out
+
+    return {
+        "node": variants("node"),
+        "tsnode": variants("ts-node"),
+        "tsx": variants("tsx"),
+        "npx": variants("npx"),
+    }
+
+
+def _run_subprocess(cmd: List[str], cwd: Path, timeout: int) -> None:
+    print("> RUN:", " ".join(cmd))
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(cwd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=timeout,
+            encoding="utf-8",
+            errors="ignore",
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(f"Команда превысила таймаут {timeout} сек: {' '.join(cmd)}")
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"Команда завершилась с кодом {proc.returncode}: {' '.join(cmd)}\n"
+            f"-----\n{proc.stdout}\n-----"
+        )
+    if proc.stdout:
+        print(proc.stdout)
+
+
+def _maybe_run_ts(script_path: Path, project_root: Path, timeout: int) -> None:
+    """Пробует запустить build-meta-from-zod.ts если есть раннер, иначе ничего не делает."""
+    if not script_path.exists():
+        raise FileNotFoundError(f"TS скрипт не найден: {script_path}")
+
+    bins = _candidate_bins(project_root)
+    module_type = _detect_module_type(project_root)
+    print(f"> module_type={module_type}")
+
+    # пробуем несколько стратегий
+    strategies: List[List[str]] = []
+
+    # 1) ts-node
+    for tsnode in bins["tsnode"]:
+        strategies.append([tsnode, str(script_path)])
+
+    # 2) tsx
+    for tsx in bins["tsx"]:
+        strategies.append([tsx, str(script_path)])
+
+    # 3) npx ts-node
+    for npx in bins["npx"]:
+        strategies.append([npx, "ts-node", str(script_path)])
+
+    # 4) node (если скрипт саморегистрирует ts-node/ts-node/register)
+    for node in bins["node"]:
+        strategies.append([node, str(script_path)])
+
+    last_error: Optional[Exception] = None
+    for cmd in strategies:
+        try:
+            _run_subprocess(cmd, cwd=project_root, timeout=timeout)
+            return
+        except Exception as e:
+            print(f"! Не удалось запустить {' '.join(cmd)}: {e}")
+            last_error = e
+
+    print("! Не удалось запустить TS скрипт, продолжаем, предполагая что JSON уже существует.")
+    if last_error:
+        print(f"Последняя ошибка: {last_error}")
+
+
+# -------------------- утилиты по виджетам --------------------
+
 
 def _extract_display_description(item: Dict[str, Any]) -> str:
-    # 1) xMeta.display_description
-    xmeta = item.get("xMeta")
-    if isinstance(xmeta, dict) and isinstance(xmeta.get("display_description"), str):
-        return xmeta["display_description"]
-    # 2) xPayload (stringified JSON)
-    xpayload = item.get("xPayload")
-    if isinstance(xpayload, str):
-        try:
-            obj = json.loads(xpayload)
-            if isinstance(obj, dict) and isinstance(obj.get("display_description"), str):
-                return obj["display_description"]
-        except Exception:
-            pass
+    """Безопасно достаем item["display"]["description"] если есть."""
+    display = item.get("display") or {}
+    if not isinstance(display, dict):
+        return ""
+    desc = display.get("description")
+    if isinstance(desc, str):
+        return desc
     return ""
 
+
 def _agents_list(item: Dict[str, Any]) -> str:
-    agents = item.get("agents")
-    if not isinstance(agents, list):
+    """Пытаемся вытащить список агентов (если есть)."""
+    configs = item.get("configurations")
+    if not isinstance(configs, list):
         return ""
-    names: list[str] = []
-    for a in agents:
-        if isinstance(a, dict):
-            n = a.get("name")
-            if n:
-                names.append(str(n))
-    return ", ".join(names)
+    agents: List[str] = []
+    for cfg in configs:
+        if not isinstance(cfg, dict):
+            continue
+        agent = cfg.get("agent")
+        if isinstance(agent, str):
+            agents.append(agent)
+    return ", ".join(sorted(set(agents)))
+
 
 def _storybook_link(name: str) -> str:
-    slug = (name or "").replace("_", "")
-    url = f"http://10.53.31.7:6001/public-storybook/?path=/docs/widget-store_widgets-{slug}--docs"
+    """Генерируем ссылку на Storybook по имени виджета."""
+    if not name:
+        return ""
+    # тут лучше подставить ваш реальный URL Storybook
+    url = f"https://widget-store.example.com/storybook/?path=/story/{html.escape(name)}"
+    return f'<a href="{url}">Storybook</a>'
+
+
+def _safe(val: Any) -> str:
+    if val is None:
+        return ""
+    return html.escape(str(val))
+
+
+def _link(url: Optional[str]) -> str:
+    if not url:
+        return ""
     return f'<a href="{_safe(url)}">{_safe(url)}</a>'
 
 
+def _build_presence_map(objs: Any) -> Dict[str, Dict[str, Set[int]]]:
+    """Построить карту {widget_name: {"DEV": {versions}, "IFT": {versions}}} из JSON.
 
-# ---- compatibility stub (legacy TS runner hook) ----
-def _maybe_run_ts(script_path, project_root, timeout=60):
-    """No-op: STUB for legacy TS runner; kept for compatibility."""
-    return None
+    Ожидаемый формат JSON (пример):
+    [
+      {
+        "widget": "ask-user-select-answers",
+        "DEV": [{"releaseVersion": 24}, ...],
+        "IFT": [{"releaseVersion": 21}, ...]
+      },
+      ...
+    ]
+    """
+    result: Dict[str, Dict[str, Set[int]]] = {}
+    if not isinstance(objs, list):
+        return result
+    for rec in objs:
+        if not isinstance(rec, dict):
+            continue
+        name = str(rec.get("widget") or rec.get("name") or "").strip()
+        if not name:
+            continue
+
+        dev_set: Set[int] = set()
+        if isinstance(rec.get("DEV"), list):
+            for d in rec["DEV"]:
+                if isinstance(d, dict) and "releaseVersion" in d:
+                    try:
+                        dev_set.add(int(d["releaseVersion"]))
+                    except Exception:
+                        pass
+
+        ift_set: Set[int] = set()
+        if isinstance(rec.get("IFT"), list):
+            for d in rec["IFT"]:
+                if isinstance(d, dict) and "releaseVersion" in d:
+                    try:
+                        ift_set.add(int(d["releaseVersion"]))
+                    except Exception:
+                        pass
+
+        result[name] = {"DEV": dev_set, "IFT": ift_set}
+    return result
 
 
-DEV_BASE_DEFAULT = "https://cms-res-web.online.sberbank.ru/da-sdk-b2c/widget-store/widget-store"
-IFT_BASE_DEFAULT = "https://cms-res-web.iftonline.sberbank.ru/SBERCMS/da-sdk-b2c/widget-store/widget-store"
-DEFAULT_TIMEOUT = 10.0
+def _presence_for_item(
+    it: Dict[str, Any],
+    timeout: float = 8.0,
+    presence_map: Optional[Dict[str, Dict[str, Set[int]]]] = None,
+) -> Dict[str, Any]:
+    """Дополнить элемент полями доступности на DEV/IFT (dev_present, ift_present, dev_url, ift_url).
 
-_SSL_CONTEXT = ssl.create_default_context()
-_SSL_CONTEXT.check_hostname = False
-_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
-
-def _norm_kebab(s: str) -> str:
-    s = (s or "").strip().lower().replace("_", "-").replace(" ", "-")
-    while "--" in s:
-        s = s.replace("--", "-")
-    return s
-
-def _slug_variants(name: str):
-    n = (name or "").strip()
-    low = n.lower()
-    kebab = _norm_kebab(n)
-    no_underscore = low.replace("_", "")
-    uniq = []
-    for s in [n, low, kebab, no_underscore]:
-        if s and s not in uniq:
-            uniq.append(s)
-    return uniq
-
-def _build_candidates(base: str, widget: str, version: int, filename: str):
-    base = base.rstrip("/")
-    fn = filename.lstrip("/")
-    v = str(version)
-    variants = _slug_variants(widget)
-    urls = []
-
-    # 1) Base without widget segment (matches your example)
-    urls.append(f"{base}/{v}/{fn}")
-
-    # 2) Common shapes with widget segment
-    for w in variants:
-        urls.append(f"{base}/{w}/{v}/{fn}")          # .../widget/version/file
-        urls.append(f"{base}/{v}/{w}/{fn}")          # .../version/widget/file
-        urls.append(f"{base}/{w}/v{v}/{fn}")         # .../widget/vX/file
-
-    # de-dup
-    out = []
-    for u in urls:
-        if u not in out:
-            out.append(u)
-    return out
-
-def _http_get(url: str, timeout: float = DEFAULT_TIMEOUT):
-    req = urllib.request.Request(url, headers={"Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
-        return getattr(resp, "status", 200), resp.read()
-
-def _fetch_json(url: str, timeout: float = DEFAULT_TIMEOUT):
-    try:
-        status, body = _http_get(url, timeout)
-        return {"ok": 200 <= status < 400, "status": status, "json": json.loads(body.decode("utf-8", "ignore"))}
-    except urllib.error.HTTPError as e:
-        return {"ok": False, "status": getattr(e, "code", None), "error": f"HTTP {getattr(e, 'code', '')}"}
-    except Exception as e:
-        return {"ok": False, "status": None, "error": str(e)}
-
-def _head_ok(url: str, timeout: float = DEFAULT_TIMEOUT):
-    try:
-        req = urllib.request.Request(url, method="HEAD")
-        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CONTEXT) as resp:
-            return 200 <= getattr(resp, "status", 200) < 400, getattr(resp, "status", 200), None
-    except urllib.error.HTTPError as e:
-        return False, getattr(e, "code", None), f"HTTP {getattr(e, 'code', '')}"
-    except Exception as e:
-        return False, None, str(e)
-
-def _exposes_has_widget(stats_json: dict, widget: str) -> bool:
-    """Heuristically check if mf-stats.json exposes the widget. We normalize keys like './foo' to 'foo' kebab-case."""
-    if not isinstance(stats_json, dict):
-        return False
-    exposes = stats_json.get("exposes") or stats_json.get("exposed") or {}
-    if not isinstance(exposes, dict):
-        return False
-    target = _norm_kebab(widget).strip("/.")
-    for k in list(exposes.keys()):
-        key = str(k).lstrip("./")
-        # Normalize typical PascalCase too (split before capitals)
-        keb = _norm_kebab(re.sub(r"(?<!^)([A-Z])", r"-\1", key))
-        if keb == target:
-            return True
-        # also allow './widget-store/<name>' style
-        if keb.endswith("/" + target):
-            return True
-    return False
-
-def _check_widget_in_environment(widget: str, version: int, base_url: str, environment: str, timeout: float = DEFAULT_TIMEOUT):
-    stats_present = False
-    container_present = False
-    chosen_stats = None
-    chosen_container = None
-    last_error = None
-    listed_in_exposes = False
-
-    # mf-stats.json: try shapes and also verify 'exposes' contains the widget
-    for stats_url in _build_candidates(base_url, widget, version, "mf-stats.json"):
-        res = _fetch_json(stats_url, timeout)
-        if res.get("ok"):
-            chosen_stats = stats_url
-            stats_present = True
-            try:
-                listed_in_exposes = _exposes_has_widget(res.get("json", {}), widget)
-            except Exception:
-                listed_in_exposes = False
-            break
-        last_error = res.get("error") or last_error
-
-    # container.js HEAD
-    for container_url in _build_candidates(base_url, widget, version, "container.js"):
-        ok2, _, err2 = _head_ok(container_url, timeout)
-        if ok2:
-            container_present = True
-            chosen_container = container_url
-            break
-        last_error = err2 or last_error
-
-    present = stats_present and container_present and listed_in_exposes
-    return {
-        "environment": environment,
-        "widget": widget,
-        "version": version,
-        "present": present,
-        "stats_url": chosen_stats,
-        "container_url": chosen_container,
-        "error": last_error,
-        "stats_ok": stats_present,
-        "head_ok": container_present,
-        "listed_in_exposes": listed_in_exposes,
-    }
-
-def check_widget(widget: str, version: int, dev_base: str = DEV_BASE_DEFAULT, ift_base: str = IFT_BASE_DEFAULT, timeout: float = DEFAULT_TIMEOUT):
-    version = int(version)
-    dev = _check_widget_in_environment(widget, version, dev_base, "DEV", timeout)
-    ift = _check_widget_in_environment(widget, version, ift_base, "IFT", timeout)
-    return {
-        "normalized_name": _norm_kebab(widget),
-        "version": version,
-        "dev_present": dev["present"],
-        "ift_present": ift["present"],
-        "dev_url": dev["container_url"],
-        "ift_url": ift["container_url"],
-        "dev_stats_url": dev["stats_url"],
-        "ift_stats_url": ift["stats_url"],
-        "error": dev.get("error") or ift.get("error"),
-        "dev_listed": dev.get("listed_in_exposes"),
-        "ift_listed": ift.get("listed_in_exposes"),
-    }
-
-def _presence_for_item(it: Dict[str, Any], timeout: float = 8.0) -> Dict[str, Any]:
-    """Дополнить элемент полями доступности на DEV/IFT (dev_present, ift_present, dev_url, ift_url)."""
+    Логика:
+      * если передан presence_map (из JSON), считаем присутствие по нему;
+      * иначе (fallback) используем модуль widget_presence, если он доступен.
+    """
     name = str(it.get("name") or "").strip()
     version = it.get("xVersion")
     try:
@@ -253,14 +290,29 @@ def _presence_for_item(it: Dict[str, Any], timeout: float = 8.0) -> Dict[str, An
     out.setdefault("ift_present", None)
     out.setdefault("dev_url", None)
     out.setdefault("ift_url", None)
+
+    # если нет имени или версии — ничего не делаем
     if not name or version_int is None:
         return out
-    if False:  # widget_presence is inlined; this branch will never execute
+
+    # 1) сначала пробуем presence_map из JSON
+    if presence_map:
+        by_widget = presence_map.get(name)
+        if by_widget:
+            dev_set = by_widget.get("DEV") or set()
+            ift_set = by_widget.get("IFT") or set()
+            out["dev_present"] = version_int in dev_set
+            out["ift_present"] = version_int in ift_set
+            # URL-ов в JSON нет, поэтому оставляем как есть
+            return out
+
+    # 2) fallback — старый путь через widget_presence
+    if widget_presence is None or not hasattr(widget_presence, "check_widget"):
         # импорт не удался — оставляем пустые поля
-        out["presence_error"] = f"widget_presence import failed: {_WIDGET_PRESENCE_IMPORT_ERROR!s}" if _WIDGET_PRESENCE_IMPORT_ERROR else "widget_presence unavailable"
+        out["presence_error"] = "widget_presence unavailable"
         return out
     try:
-        res = check_widget(name, version_int, timeout=timeout)
+        res = widget_presence.check_widget(name, version_int, timeout=timeout)  # type: ignore[attr-defined]
         out["dev_present"] = bool(res.get("dev_present")) if res.get("dev_present") is not None else None
         out["ift_present"] = bool(res.get("ift_present")) if res.get("ift_present") is not None else None
         out["dev_url"] = res.get("dev_url")
@@ -299,22 +351,42 @@ def render_table_html(items: List[Dict[str, Any]]) -> str:
         dev_present = it.get("dev_present")
         ift_present = it.get("ift_present")
 
+        def _present_to_cell(val: Any) -> str:
+            if val is True:
+                return "✔"
+            if val is False:
+                return "—"
+            return ""
+
+        dev_cell = _present_to_cell(dev_present)
+        ift_cell = _present_to_cell(ift_present)
+
         rows.append(
-f"""    <tr>\n      <td>{_safe(name)}</td>\n      <td>{_safe(xver if xver is not None else "")}</td>\n      <td>{("✅" if dev_present is True else ("❌" if dev_present is False else "—"))}</td>\n      <td>{("✅" if ift_present is True else ("❌" if ift_present is False else "—"))}</td>\n      <td>{_safe(agents)}</td>\n      <td>{_safe(desc)}</td>\n      <td>{link}</td>\n    </tr>"""
+            f"""    <tr>
+      <td>{_safe(name)}</td>
+      <td>{_safe(xver)}</td>
+      <td>{_safe(dev_cell)}</td>
+      <td>{_safe(ift_cell)}</td>
+      <td>{_safe(agents)}</td>
+      <td>{_safe(desc)}</td>
+      <td>{link}</td>
+    </tr>"""
         )
 
     tail = """
   </tbody>
 </table>
 """.lstrip()
-
     return "\n".join([head] + rows + [tail])
 
+
 # -------------------- Confluence REST --------------------
+
 
 def _auth_header(user: Optional[str], pwd: str) -> str:
     raw = f"{user or ''}:{pwd}".encode("utf-8")
     return "Basic " + base64.b64encode(raw).decode("ascii")
+
 
 def _http(method: str, url: str, headers: Dict[str, str], data: Optional[bytes] = None) -> Dict[str, Any]:
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
@@ -332,40 +404,75 @@ def _http(method: str, url: str, headers: Dict[str, str], data: Optional[bytes] 
     except urllib.error.URLError as e:
         raise RuntimeError(f"HTTP error: {e}")
 
+
 def confluence_get_page(conf_url: str, auth: str, page_id: int) -> Dict[str, Any]:
     url = f"{conf_url}/rest/api/content/{page_id}?expand=version,ancestors"
     headers = {"Accept": "application/json", "Authorization": auth}
     return _http("GET", url, headers)
 
-def confluence_put_storage(conf_url: str, auth: str, page_id: int, title: str, html_body: str, next_version: int, ancestors=None, message: str = "") -> Dict[str, Any]:
+
+def confluence_put_storage(
+    conf_url: str,
+    auth: str,
+    page_id: int,
+    title: str,
+    storage_html: str,
+    version: int,
+    ancestors: Optional[List[Dict[str, Any]]] = None,
+    message: str = "",
+) -> Dict[str, Any]:
     url = f"{conf_url}/rest/api/content/{page_id}"
-    payload = {
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": auth,
+    }
+    data: Dict[str, Any] = {
         "id": str(page_id),
         "type": "page",
         "title": title,
-        "version": {"number": next_version, "minorEdit": True, "message": message or ""},
-        "body": {"storage": {"representation": "storage", "value": html_body}}
+        "version": {"number": version, "message": message or "update via script"},
+        "body": {
+            "storage": {
+                "value": storage_html,
+                "representation": "storage",
+            }
+        },
     }
     if ancestors:
-        payload["ancestors"] = ancestors
-    data = json.dumps(payload).encode("utf-8")
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": auth
-    }
-    return _http("PUT", url, headers, data=data)
+        data["ancestors"] = [{"id": a["id"]} for a in ancestors if "id" in a]
+    payload = json.dumps(data).encode("utf-8")
+    return _http("PUT", url, headers, payload)
+
 
 # -------------------- main --------------------
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Собрать таблицу из widget-meta.json и записать в Confluence")
     ap.add_argument("--script", required=True, help="Путь к build-meta-from-zod.ts")
-    ap.add_argument("--outdir", required=True, help="Папка вывода (относительно ТЕКУЩЕЙ рабочей директории)")
-    ap.add_argument("--outfile", default="widget-meta.json", help="Имя JSON файла (default: widget-meta.json)")
+    ap.add_argument(
+        "--outdir",
+        required=True,
+        help="Папка вывода (относительно ТЕКУЩЕЙ рабочей директории)",
+    )
+    ap.add_argument(
+        "--outfile",
+        default="widget-meta.json",
+        help="Имя JSON файла (default: widget-meta.json)",
+    )
+    ap.add_argument(
+        "--presence-json",
+        help="Путь к JSON с публикациями виджетов (DEV/IFT)",
+    )
     ap.add_argument("--timeout", type=int, default=300, help="Таймаут запуска TS, сек (default 300)")
     ap.add_argument("--wait", type=int, default=120, help="Таймаут ожидания JSON, сек (default 120)")
-    ap.add_argument("--page-id", type=int, default=int(os.getenv("CONF_PAGE_ID", "21609790602")), help="Confluence pageId")
+    ap.add_argument(
+        "--page-id",
+        type=int,
+        default=int(os.getenv("CONF_PAGE_ID", "21609790602")),
+        help="Confluence pageId",
+    )
     args = ap.parse_args()
 
     # --- пути ---
@@ -378,10 +485,10 @@ def main() -> None:
     outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / args.outfile
 
-    # предполагаемый корень проекта: на уровень выше папки scripts/
-    project_root = script.parents[1] if script.parent.name.lower() in {"scripts", "script"} else script.parent
+    project_root = _project_root_from_script(script)
+    print("> project_root:", project_root)
 
-    # --- запускаем TS (если есть раннеры) ---
+    # --- запускаем TS (опционально) ---
     _maybe_run_ts(script, project_root, timeout=args.timeout)
 
     # --- читаем JSON ---
@@ -404,8 +511,22 @@ def main() -> None:
     if not isinstance(data, list):
         raise RuntimeError("Ожидался массив объектов с виджетами.")
 
+    # --- читаем presence JSON (опционально) ---
+    presence_map = None
+    if getattr(args, "presence_json", None):
+        presence_path = Path(args.presence_json).resolve()
+        print(f"> Presence JSON: {presence_path}")
+        try:
+            with presence_path.open("r", encoding="utf-8") as f:
+                presence_raw = json.load(f)
+            presence_map = _build_presence_map(presence_raw)
+            print(f"> Загружено presence-записей: {len(presence_map)} виджетов")
+        except Exception as e:
+            print(f"! Предупреждение: не удалось прочитать presence JSON ({presence_path}): {e}", file=sys.stderr)
+            presence_map = None
+
     # --- дополняем данными о доступности (DEV/IFT) и строим таблицу ---
-    enriched = [_presence_for_item(it) for it in data]
+    enriched = [_presence_for_item(it, presence_map=presence_map) for it in data]
     table_html = render_table_html(enriched)
     page_html = f"""
 <p><strong>Widget meta table</strong> — обновлено: {html.escape(time.strftime('%Y-%m-%d %H:%M:%S'))}</p>
@@ -413,9 +534,13 @@ def main() -> None:
 """.strip()
 
     # --- отправляем в Confluence ---
-    conf_url = ''
-    conf_user = ''
-    conf_pass = ''
+    # Если хочешь, можешь вернуть использование ENV-переменных:
+    # conf_url = os.getenv("CONF_URL")
+    # conf_user = os.getenv("CONF_USER")
+    # conf_pass = os.getenv("CONF_PASS")
+    conf_url = 'https://confluence.sberbank.ru'
+    conf_user = '19060455'
+    conf_pass = '19#MOSiad#24'
     page_id = args.page_id
     if not conf_url or not conf_pass:
         raise RuntimeError("Нужно задать ENV: CONF_URL и CONF_PASS (и при Basic — CONF_USER).")
@@ -427,10 +552,14 @@ def main() -> None:
     next_version = int(page.get("version", {}).get("number", 0)) + 1
 
     _ = confluence_put_storage(
-        conf_url, auth, page_id,
-        title, page_html, next_version,
+        conf_url,
+        auth,
+        page_id,
+        title,
+        page_html,
+        next_version,
         ancestors=ancestors,
-        message="Автообновление: таблица (name, xVersion, agents, display_description, Storybook)"
+        message="Автообновление: таблица (name, xVersion, DEV, IFT, agents, display_description, Storybook)",
     )
     print(f"✅ Обновлено: pageId={page_id} (версия {next_version})")
 
