@@ -29,6 +29,7 @@ import base64
 import html
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -36,7 +37,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 # -------- widget_presence (опционально) --------
 
@@ -47,6 +48,7 @@ except Exception as _e_wp:
     _WIDGET_PRESENCE_IMPORT_ERROR = _e_wp
 else:
     _WIDGET_PRESENCE_IMPORT_ERROR = None
+
 
 # -------- утилиты для JSON и TS-раннеров --------
 
@@ -76,7 +78,7 @@ def _detect_module_mode(project_root: Path) -> str:
     return "unknown"
 
 
-def _candidate_bins(project_root: Path) -> dict:
+def _candidate_bins(project_root: Path) -> Dict[str, List[str]]:
     """Возвращает возможные пути к tsx/ts-node/node/npx (локальные + системные)."""
     bin_dir = project_root / "node_modules" / ".bin"
     on_windows = os.name == "nt"
@@ -180,11 +182,26 @@ def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
             print(f"  Reason: {e}")
     print("! Не удалось запустить TS-скрипт ни одним раннером — используем существующий JSON.")
 
+
 # -------- работа с полями и таблицей --------
 
 
 def _safe(value: Any) -> str:
     return html.escape("" if value is None else str(value))
+
+
+def _normalize_widget_key(name: str) -> str:
+    """
+    Приводим имя виджета к общему виду:
+      - lower()
+      - убираем всё, кроме [a-z0-9]
+
+    Примеры:
+      "ask-user-select-answers" -> "askuserselectanswers"
+      "ask_user_select_answers" -> "askuserselectanswers"
+    """
+    s = name.strip().lower()
+    return re.sub(r"[^a-z0-9]+", "", s)
 
 
 def _extract_display_description(item: Dict[str, Any]) -> str:
@@ -264,6 +281,7 @@ def _presence_for_item(item: Dict[str, Any], timeout: float = 8.0) -> Dict[str, 
 
     return out
 
+
 # -------- published-widgets.json -> последние версии DEV/IFT --------
 
 
@@ -274,8 +292,8 @@ def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Option
          "DEV": [{"releaseVersion": 24}, ...],
          "IFT": [{"releaseVersion": 21}, ...]
       }, ...]
-    и возвращает:
-      {"ask-user-select-answers": {"DEV": 56, "IFT": 56}, ...}
+    и возвращает словарь по нормализованному ключу:
+      {"askuserselectanswers": {"DEV": 56, "IFT": 56}, ...}
     """
     if not path:
         return {}
@@ -295,6 +313,18 @@ def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Option
         return {}
 
     result: Dict[str, Dict[str, Optional[int]]] = {}
+
+    def last_version(items: Any) -> Optional[int]:
+        versions: List[int] = []
+        if isinstance(items, list):
+            for it in items:
+                if isinstance(it, dict) and "releaseVersion" in it:
+                    try:
+                        versions.append(int(it["releaseVersion"]))
+                    except Exception:
+                        pass
+        return max(versions) if versions else None
+
     for obj in data:
         if not isinstance(obj, dict):
             continue
@@ -302,21 +332,11 @@ def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Option
         if not widget_name:
             continue
 
+        key = _normalize_widget_key(widget_name)
         dev_list = obj.get("DEV") or []
         ift_list = obj.get("IFT") or []
 
-        def last_version(items: Any) -> Optional[int]:
-            versions: List[int] = []
-            if isinstance(items, list):
-                for it in items:
-                    if isinstance(it, dict) and "releaseVersion" in it:
-                        try:
-                            versions.append(int(it["releaseVersion"]))
-                        except Exception:
-                            pass
-            return max(versions) if versions else None
-
-        result[widget_name] = {
+        result[key] = {
             "DEV": last_version(dev_list),
             "IFT": last_version(ift_list),
         }
@@ -358,8 +378,9 @@ def render_table_html(
         dev_icon = "✅" if dev_present is True else ("❌" if dev_present is False else "—")
         ift_icon = "✅" if ift_present is True else ("❌" if ift_present is False else "—")
 
-        # последние релизы из published-widgets.json
-        pub = published_versions.get(name, {})
+        # нормализованный ключ для поиска в published_versions
+        key = _normalize_widget_key(name)
+        pub = published_versions.get(key, {})
         dev_rel = pub.get("DEV")
         ift_rel = pub.get("IFT")
 
@@ -386,6 +407,7 @@ def render_table_html(
 """.lstrip()
 
     return "\n".join([head] + rows + [tail])
+
 
 # -------- Confluence REST --------
 
@@ -447,7 +469,8 @@ def confluence_put_storage(
     }
     return _http("PUT", url, headers, data=data)
 
-# -------- main --------
+
+# -------- main и вспомогательные --------
 
 
 def _wait_for_file(path: Path, wait_sec: int) -> None:
@@ -473,7 +496,7 @@ def _load_widget_meta(path: Path) -> List[Dict[str, Any]]:
     return data
 
 
-def _confluence_config(args: argparse.Namespace) -> tuple[str, Optional[str], str, int]:
+def _confluence_config(args: argparse.Namespace) -> Tuple[str, Optional[str], str, int]:
     """
     Берём конфиг Confluence из ENV + аргументов.
     URL и PASS обязательны, USER может быть пустым (PAT).
@@ -571,7 +594,10 @@ def main() -> None:
         page_html,
         next_version,
         ancestors=ancestors,
-        message="Автообновление: таблица (name, xVersion, DEV, IFT, DEV_rel, IFT_rel, agents, display_description, Storybook)",
+        message=(
+            "Автообновление: таблица (name, xVersion, DEV, IFT, DEV_rel, IFT_rel, "
+            "agents, display_description, Storybook)"
+        ),
     )
     print(f"✅ Обновлено: pageId={page_id} (версия {next_version})")
 
