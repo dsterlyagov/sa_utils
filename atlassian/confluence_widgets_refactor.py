@@ -9,6 +9,9 @@
   4. Читает published-widgets.json и добавляет последние releaseVersion по DEV/IFT.
   5. Рендерит HTML-таблицу и записывает её в Confluence.
 
+Текущая таблица в Confluence имеет колонки:
+  name | PROM | IFT | agents | display_description | Storybook
+
 ENV:
   CONF_URL      — https://confluence.example.com (обязательно)
   CONF_USER     — логин/email (можно пустым, если PAT без логина)
@@ -243,6 +246,7 @@ def _presence_for_item(item: Dict[str, Any], timeout: float = 8.0) -> Dict[str, 
     """
     Дополняет элемент полями:
       dev_present, ift_present, dev_url, ift_url, presence_error (при ошибке).
+    Сейчас эти поля в таблице не выводятся, но могут пригодиться далее.
     """
     name = str(item.get("name") or "").strip()
     version = item.get("xVersion")
@@ -294,6 +298,9 @@ def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Option
       }, ...]
     и возвращает словарь по нормализованному ключу:
       {"askuserselectanswers": {"DEV": 56, "IFT": 56}, ...}
+    Где:
+      DEV  -> будет отображаться в колонке PROM
+      IFT  -> в колонке IFT
     """
     if not path:
         return {}
@@ -348,17 +355,22 @@ def render_table_html(
     items: List[Dict[str, Any]],
     published_versions: Dict[str, Dict[str, Optional[int]]],
 ) -> str:
+    """
+    Таблица:
+      name | PROM | IFT | agents | display_description | Storybook
+
+    PROM — последняя DEV releaseVersion из published-widgets.json.
+    IFT  — последняя IFT releaseVersion.
+    Если данных нет — выводится ❌.
+    """
     head = """
 <table class="wrapped">
-  <colgroup><col/><col/><col/><col/><col/><col/><col/><col/><col/></colgroup>
+  <colgroup><col/><col/><col/><col/><col/><col/></colgroup>
   <tbody>
     <tr>
       <th scope="col">name</th>
-      <th scope="col">xVersion</th>
-      <th scope="col">DEV</th>
+      <th scope="col">PROM</th>
       <th scope="col">IFT</th>
-      <th scope="col">DEV_rel</th>
-      <th scope="col">IFT_rel</th>
       <th scope="col">agents</th>
       <th scope="col">display_description</th>
       <th scope="col">Storybook</th>
@@ -368,33 +380,24 @@ def render_table_html(
     rows: List[str] = []
     for it in items:
         name = str(it.get("name") or "")
-        xver = it.get("xVersion")
         agents = _agents_list(it)
         desc = _extract_display_description(it)
         link = _storybook_link(name) if name else ""
-        dev_present = it.get("dev_present")
-        ift_present = it.get("ift_present")
-
-        dev_icon = "✅" if dev_present is True else ("❌" if dev_present is False else "—")
-        ift_icon = "✅" if ift_present is True else ("❌" if ift_present is False else "—")
 
         # нормализованный ключ для поиска в published_versions
         key = _normalize_widget_key(name)
         pub = published_versions.get(key, {})
-        dev_rel = pub.get("DEV")
-        ift_rel = pub.get("IFT")
+        prom_rel = pub.get("DEV")  # PROM = DEV_rel
+        ift_rel = pub.get("IFT")   # IFT = IFT_rel
 
-        dev_rel_str = str(dev_rel) if dev_rel is not None else "—"
-        ift_rel_str = str(ift_rel) if ift_rel is not None else "—"
+        prom_str = str(prom_rel) if prom_rel is not None else "❌"
+        ift_str  = str(ift_rel)  if ift_rel  is not None else "❌"
 
         rows.append(
             f"    <tr>\n"
             f"      <td>{_safe(name)}</td>\n"
-            f"      <td>{_safe(xver if xver is not None else '')}</td>\n"
-            f"      <td>{dev_icon}</td>\n"
-            f"      <td>{ift_icon}</td>\n"
-            f"      <td>{_safe(dev_rel_str)}</td>\n"
-            f"      <td>{_safe(ift_rel_str)}</td>\n"
+            f"      <td>{_safe(prom_str)}</td>\n"
+            f"      <td>{_safe(ift_str)}</td>\n"
             f"      <td>{_safe(agents)}</td>\n"
             f"      <td>{_safe(desc)}</td>\n"
             f"      <td>{link}</td>\n"
@@ -594,10 +597,7 @@ def main() -> None:
         page_html,
         next_version,
         ancestors=ancestors,
-        message=(
-            "Автообновление: таблица (name, xVersion, DEV, IFT, DEV_rel, IFT_rel, "
-            "agents, display_description, Storybook)"
-        ),
+        message="Автообновление: таблица (name, PROM, IFT, agents, display_description, Storybook)",
     )
     print(f"✅ Обновлено: pageId={page_id} (версия {next_version})")
 
