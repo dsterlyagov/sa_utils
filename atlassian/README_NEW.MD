@@ -76,3 +76,11 @@ python widgets_to_confluence_combined.py ^
   --outfile widget-meta.json ^
   --versions 20-30 ^
   --page-id 21609790602
+
+
+python confluence_save_table_with_presence.py ^
+  --script .\widget-store\scripts\build-meta-from-zod.ts ^
+  --outdir .\widget-store\output ^
+  --outfile widget-meta.json ^
+  --presence-json .\published-widgets.json ^
+  --page-id 21609790602
