@@ -5,8 +5,9 @@
 Скрипт:
   1. Запускает build-meta-from-zod.ts (если получилось найти раннер).
   2. Ждёт JSON (--outdir/--outfile) и читает его.
-  3. Дополняет данные информацией о присутствии виджета на DEV/IFT.
-  4. Рендерит HTML-таблицу и записывает её в Confluence.
+  3. Дополняет данные информацией о присутствии виджета на DEV/IFT (widget_presence).
+  4. Читает published-widgets.json и добавляет последние releaseVersion по DEV/IFT.
+  5. Рендерит HTML-таблицу и записывает её в Confluence.
 
 ENV:
   CONF_URL      — https://confluence.example.com (обязательно)
@@ -19,6 +20,7 @@ ENV:
     --script .\widget-store\scripts\build-meta-from-zod.ts ^
     --outdir .\widget-store\output ^
     --outfile widget-meta.json ^
+    --published-json published-widgets.json ^
     --page-id 21609790602
 """
 
@@ -262,17 +264,81 @@ def _presence_for_item(item: Dict[str, Any], timeout: float = 8.0) -> Dict[str, 
 
     return out
 
+# -------- published-widgets.json -> последние версии DEV/IFT --------
 
-def render_table_html(items: List[Dict[str, Any]]) -> str:
+
+def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Optional[int]]]:
+    """
+    Читает JSON вида:
+      [{ "widget": "ask-user-select-answers",
+         "DEV": [{"releaseVersion": 24}, ...],
+         "IFT": [{"releaseVersion": 21}, ...]
+      }, ...]
+    и возвращает:
+      {"ask-user-select-answers": {"DEV": 56, "IFT": 56}, ...}
+    """
+    if not path:
+        return {}
+    if not path.exists():
+        print(f"! published-json не найден: {path}")
+        return {}
+
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"! Не удалось прочитать published-json {path}: {e}")
+        return {}
+
+    if not isinstance(data, list):
+        print(f"! published-json {path} должен быть массивом")
+        return {}
+
+    result: Dict[str, Dict[str, Optional[int]]] = {}
+    for obj in data:
+        if not isinstance(obj, dict):
+            continue
+        widget_name = str(obj.get("widget") or "").strip()
+        if not widget_name:
+            continue
+
+        dev_list = obj.get("DEV") or []
+        ift_list = obj.get("IFT") or []
+
+        def last_version(items: Any) -> Optional[int]:
+            versions: List[int] = []
+            if isinstance(items, list):
+                for it in items:
+                    if isinstance(it, dict) and "releaseVersion" in it:
+                        try:
+                            versions.append(int(it["releaseVersion"]))
+                        except Exception:
+                            pass
+            return max(versions) if versions else None
+
+        result[widget_name] = {
+            "DEV": last_version(dev_list),
+            "IFT": last_version(ift_list),
+        }
+
+    return result
+
+
+def render_table_html(
+    items: List[Dict[str, Any]],
+    published_versions: Dict[str, Dict[str, Optional[int]]],
+) -> str:
     head = """
 <table class="wrapped">
-  <colgroup><col/><col/><col/><col/><col/><col/><col/></colgroup>
+  <colgroup><col/><col/><col/><col/><col/><col/><col/><col/><col/></colgroup>
   <tbody>
     <tr>
       <th scope="col">name</th>
       <th scope="col">xVersion</th>
       <th scope="col">DEV</th>
       <th scope="col">IFT</th>
+      <th scope="col">DEV_rel</th>
+      <th scope="col">IFT_rel</th>
       <th scope="col">agents</th>
       <th scope="col">display_description</th>
       <th scope="col">Storybook</th>
@@ -292,12 +358,22 @@ def render_table_html(items: List[Dict[str, Any]]) -> str:
         dev_icon = "✅" if dev_present is True else ("❌" if dev_present is False else "—")
         ift_icon = "✅" if ift_present is True else ("❌" if ift_present is False else "—")
 
+        # последние релизы из published-widgets.json
+        pub = published_versions.get(name, {})
+        dev_rel = pub.get("DEV")
+        ift_rel = pub.get("IFT")
+
+        dev_rel_str = str(dev_rel) if dev_rel is not None else "—"
+        ift_rel_str = str(ift_rel) if ift_rel is not None else "—"
+
         rows.append(
             f"    <tr>\n"
             f"      <td>{_safe(name)}</td>\n"
             f"      <td>{_safe(xver if xver is not None else '')}</td>\n"
             f"      <td>{dev_icon}</td>\n"
             f"      <td>{ift_icon}</td>\n"
+            f"      <td>{_safe(dev_rel_str)}</td>\n"
+            f"      <td>{_safe(ift_rel_str)}</td>\n"
             f"      <td>{_safe(agents)}</td>\n"
             f"      <td>{_safe(desc)}</td>\n"
             f"      <td>{link}</td>\n"
@@ -428,6 +504,11 @@ def main() -> None:
         default=int(os.getenv("CONF_PAGE_ID", "21609790602")),
         help="Confluence pageId (по умолчанию из ENV CONF_PAGE_ID)",
     )
+    parser.add_argument(
+        "--published-json",
+        help="JSON с релизами виджетов (формат published-widgets.json)",
+        default=None,
+    )
     args = parser.parse_args()
 
     # 1. Разбираем пути
@@ -453,29 +534,32 @@ def main() -> None:
     _wait_for_file(outfile, args.wait)
     widgets = _load_widget_meta(outfile)
 
-    # 4. Дополняем данными о присутствии и строим таблицу
+    # 4. Готовим published-widgets (последние версии по DEV/IFT)
+    published_path = Path(args.published_json).resolve() if args.published_json else None
+    published_versions = _load_published_versions(published_path)
+
+    # 5. Дополняем данными о присутствии и строим таблицу
     enriched = [_presence_for_item(item) for item in widgets]
-    table_html = render_table_html(enriched)
+    table_html = render_table_html(enriched, published_versions)
     page_html = (
         f"<p><strong>Widget meta table</strong> — "
         f"обновлено: {html.escape(time.strftime('%Y-%m-%d %H:%M:%S'))}</p>\n"
         f"{table_html}"
     )
 
-    # 5. Отправляем в Confluence
+    # 6. Отправляем в Confluence
     conf_url, conf_user, conf_pass, page_id = _confluence_config(args)
     auth = _auth_header(conf_user, conf_pass)
     page = confluence_get_page(conf_url, auth, page_id)
     title = page.get("title") or f"Page {page_id}"
 
-    # ВАЖНО: корректно формируем ancestors, чтобы страница не улетала в корень.
-    # Берём только ПОСЛЕДНЕГО предка и передаём его id.
+    # ancestors: берём последнего предка, чтобы страница не улетала в корень
     anc_list = page.get("ancestors") or []
     if anc_list:
         parent_id = anc_list[-1].get("id")
         ancestors = [{"id": parent_id}] if parent_id else None
     else:
-        ancestors = None  # не задаём ancestors, структура останется прежней
+        ancestors = None
 
     next_version = int(page.get("version", {}).get("number", 0)) + 1
 
@@ -487,7 +571,7 @@ def main() -> None:
         page_html,
         next_version,
         ancestors=ancestors,
-        message="Автообновление: таблица (name, xVersion, agents, display_description, Storybook)",
+        message="Автообновление: таблица (name, xVersion, DEV, IFT, DEV_rel, IFT_rel, agents, display_description, Storybook)",
     )
     print(f"✅ Обновлено: pageId={page_id} (версия {next_version})")
 

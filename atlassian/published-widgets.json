@@ -1,0 +1,383 @@
+[
+  {
+    "widget": "ask-user-select-answers",
+    "DEV": [
+      {
+        "releaseVersion": 24
+      },
+      {
+        "releaseVersion": 56
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 21
+      },
+      {
+        "releaseVersion": 24
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 55
+      },
+      {
+        "releaseVersion": 56
+      }
+    ]
+  },
+  {
+    "widget": "card-list",
+    "DEV": [
+      {
+        "releaseVersion": 43
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 23
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 41
+      },
+      {
+        "releaseVersion": 43
+      },
+      {
+        "releaseVersion": 46
+      },
+      {
+        "releaseVersion": 47
+      },
+      {
+        "releaseVersion": 48
+      }
+    ]
+  },
+  {
+    "widget": "deposite-cell-list",
+    "DEV": [
+      {
+        "releaseVersion": 39
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 23
+      },
+      {
+        "releaseVersion": 30
+      },
+      {
+        "releaseVersion": 33
+      },
+      {
+        "releaseVersion": 35
+      },
+      {
+        "releaseVersion": 36
+      },
+      {
+        "releaseVersion": 37
+      },
+      {
+        "releaseVersion": 39
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 46
+      },
+      {
+        "releaseVersion": 48
+      }
+    ]
+  },
+  {
+    "widget": "goals-cell-list",
+    "DEV": [
+      {
+        "releaseVersion": 22
+      },
+      {
+        "releaseVersion": 38
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 22
+      },
+      {
+        "releaseVersion": 28
+      },
+      {
+        "releaseVersion": 31
+      },
+      {
+        "releaseVersion": 38
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 48
+      }
+    ]
+  },
+  {
+    "widget": "goals-status-block",
+    "DEV": [
+      {
+        "releaseVersion": 22
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 22
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 48
+      }
+    ]
+  },
+  {
+    "widget": "list-view",
+    "DEV": [],
+    "IFT": [
+      {
+        "releaseVersion": 57
+      },
+      {
+        "releaseVersion": 58
+      }
+    ]
+  },
+  {
+    "widget": "navigate-user-to-screen",
+    "DEV": [
+      {
+        "releaseVersion": 24
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 21
+      },
+      {
+        "releaseVersion": 24
+      },
+      {
+        "releaseVersion": 40
+      }
+    ]
+  },
+  {
+    "widget": "product-cell-list",
+    "DEV": [
+      {
+        "releaseVersion": 45
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 20
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 45
+      },
+      {
+        "releaseVersion": 48
+      }
+    ]
+  },
+  {
+    "widget": "product-cell-with-action-list",
+    "DEV": [
+      {
+        "releaseVersion": 45
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 27
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 45
+      },
+      {
+        "releaseVersion": 48
+      }
+    ]
+  },
+  {
+    "widget": "prompt-user-choice",
+    "DEV": [
+      {
+        "releaseVersion": 24
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 21
+      },
+      {
+        "releaseVersion": 24
+      },
+      {
+        "releaseVersion": 40
+      }
+    ]
+  },
+  {
+    "widget": "search",
+    "DEV": [],
+    "IFT": [
+      {
+        "releaseVersion": 54
+      },
+      {
+        "releaseVersion": 59
+      }
+    ]
+  },
+  {
+    "widget": "suggestion-button-list",
+    "DEV": [],
+    "IFT": [
+      {
+        "releaseVersion": 29
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 50
+      },
+      {
+        "releaseVersion": 53
+      }
+    ]
+  },
+  {
+    "widget": "table",
+    "DEV": [
+      {
+        "releaseVersion": 39
+      },
+      {
+        "releaseVersion": 42
+      },
+      {
+        "releaseVersion": 48
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 23
+      },
+      {
+        "releaseVersion": 30
+      },
+      {
+        "releaseVersion": 33
+      },
+      {
+        "releaseVersion": 39
+      },
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 41
+      },
+      {
+        "releaseVersion": 42
+      },
+      {
+        "releaseVersion": 46
+      },
+      {
+        "releaseVersion": 48
+      },
+      {
+        "releaseVersion": 60
+      }
+    ]
+  },
+  {
+    "widget": "workflow-confirmation",
+    "DEV": [
+      {
+        "releaseVersion": 51
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 51
+      }
+    ]
+  },
+  {
+    "widget": "workflow-confirmation-sms",
+    "DEV": [],
+    "IFT": [
+      {
+        "releaseVersion": 40
+      }
+    ]
+  },
+  {
+    "widget": "workflow-result-screen",
+    "DEV": [
+      {
+        "releaseVersion": 52
+      }
+    ],
+    "IFT": [
+      {
+        "releaseVersion": 40
+      },
+      {
+        "releaseVersion": 49
+      },
+      {
+        "releaseVersion": 52
+      }
+    ]
+  }
+]
