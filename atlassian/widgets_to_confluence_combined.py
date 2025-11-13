@@ -76,7 +76,7 @@ def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
     """
     Пытаемся запустить build-meta-from-zod.ts разными способами.
     Порядок:
-      1) node -r ts-node/register (CJS — то, что нужно при ошибке "exports is not defined in ES module scope")
+      1) node -r ts-node/register (CJS — актуально при ошибке "exports is not defined in ES module scope")
       2) node --loader ts-node/esm (ESM)
       3) bun run
       4) pnpm exec ts-node
@@ -86,6 +86,8 @@ def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
     Если ВСЕ варианты падают, НЕ выбрасываем ошибку сразу:
     возможно, widget-meta.json уже был сгенерирован ранее.
     Тогда дальше main() сам проверит наличие файла.
+
+    Дополнительно: игнорируем OSError (в т.ч. [WinError 193]) и пробуем следующий раннер.
     """
     runners: List[List[str]] = []
 
@@ -131,6 +133,12 @@ def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
         except subprocess.CalledProcessError as e:
             last_err = f"Код выхода {e.returncode} при запуске: {' '.join(cmd)}"
             print("⚠️", last_err, file=sys.stderr)
+        except OSError as e:
+            # Например [WinError 193] %1 is not a valid Win32 application
+            last_err = f"OSError при запуске ({e.errno}): {e}"
+            print("⚠️", last_err, file=sys.stderr)
+            # пробуем следующий раннер
+            continue
 
     print("⚠️ Все варианты запуска build-meta-from-zod.ts завершились ошибкой.", file=sys.stderr)
     if last_err:
