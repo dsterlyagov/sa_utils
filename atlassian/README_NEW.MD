@@ -68,3 +68,11 @@ python confluence_save_table_fixed_patched.py \
   --base /path/to/base.csv \
   --page-id 123456 \
   --env-file /path/to/.env
+
+
+python widgets_to_confluence_combined.py ^
+  --script widget-store/scripts/build-meta-from-zod.ts ^
+  --outdir widget-store/output ^
+  --outfile widget-meta.json ^
+  --versions 20-30 ^
+  --page-id 21609790602
