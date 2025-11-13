@@ -435,7 +435,11 @@ def main() -> None:
     if not script.exists():
         raise FileNotFoundError(f"Не найден скрипт: {script}")
 
-    outdir = (Path(os.getcwd()) / args.outdir).resolve() if not Path(args.outdir).is_absolute() else Path(args.outdir).resolve()
+    outdir = (
+        (Path(os.getcwd()) / args.outdir).resolve()
+        if not Path(args.outdir).is_absolute()
+        else Path(args.outdir).resolve()
+    )
     outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / args.outfile
 
@@ -463,7 +467,16 @@ def main() -> None:
     auth = _auth_header(conf_user, conf_pass)
     page = confluence_get_page(conf_url, auth, page_id)
     title = page.get("title") or f"Page {page_id}"
-    ancestors = page.get("ancestors") or []
+
+    # ВАЖНО: корректно формируем ancestors, чтобы страница не улетала в корень.
+    # Берём только ПОСЛЕДНЕГО предка и передаём его id.
+    anc_list = page.get("ancestors") or []
+    if anc_list:
+        parent_id = anc_list[-1].get("id")
+        ancestors = [{"id": parent_id}] if parent_id else None
+    else:
+        ancestors = None  # не задаём ancestors, структура останется прежней
+
     next_version = int(page.get("version", {}).get("number", 0)) + 1
 
     confluence_put_storage(
