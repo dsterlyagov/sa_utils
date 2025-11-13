@@ -28,8 +28,6 @@ ENV:
 
 """
 
-from __future__ import annotations
-
 import argparse
 import base64
 import html
@@ -48,6 +46,7 @@ from typing import Any, Dict, List, Optional, Tuple
 #   Общие вспомогательные
 # ==========================
 
+
 def _read_json(path: Path) -> Optional[dict]:
     try:
         with path.open("r", encoding="utf-8") as f:
@@ -55,125 +54,93 @@ def _read_json(path: Path) -> Optional[dict]:
     except Exception:
         return None
 
-def _detect_module_mode(project_root: Path) -> str:
-    """esm | cjs | unknown"""
-    pkg = _read_json(project_root / "package.json") or {}
-    if pkg.get("type") == "module":
-        return "esm"
-    tsconfig = _read_json(project_root / "tsconfig.json") or {}
-    comp = (tsconfig.get("compilerOptions") or {})
-    module = (comp.get("module") or "").lower()
-    if module.startswith("es"):
-        return "esm"
-    if module in {"commonjs", "cjs"}:
-        return "cjs"
-    return "unknown"
 
-def _candidate_bins(project_root: Path) -> dict:
-    """пути к бинарям из node_modules/.bin + системные"""
-    bin_dir = project_root / "node_modules" / ".bin"
-    win = os.name == "nt"
-
-    def variants(name: str) -> List[str]:
-        out: List[str] = []
-        if win:
-            p = (bin_dir / f"{name}.cmd").resolve()
-            out.append(str(p))
-            out.append(name + ".cmd")
-            out.append(name + ".exe")
-        else:
-            p = (bin_dir / name).resolve()
-            out.append(str(p))
-            out.append(name)
-        return out
-
-    bins = {
-        "node": variants("node"),
-        "bun": variants("bun"),
-        "pnpm": variants("pnpm"),
-        "npm": variants("npm"),
-        "yarn": variants("yarn"),
-    }
-    return bins
-
-def _find_in_path(candidates: List[str]) -> Optional[str]:
+def _find_node_runner(name: str) -> Optional[Path]:
+    """
+    Ищем name или name.cmd в PATH.
+    """
+    env_path = os.environ.get("PATH", "")
     sep = ";" if os.name == "nt" else ":"
-    path_env = os.environ.get("PATH") or ""
-    for folder in path_env.split(sep):
-        folder = folder.strip()
-        if not folder:
+    for p in env_path.split(sep):
+        if not p:
             continue
-        for name in candidates:
-            p = Path(folder) / name
-            if p.exists() and p.is_file():
-                return str(p.resolve())
+        bin_dir = Path(p)
+        for candidate in (name, f"{name}.cmd"):
+            exe = bin_dir / candidate
+            if exe.exists() and exe.is_file():
+                return exe.resolve()
     return None
 
-def _pick_runners(script: Path, project_root: Path) -> List[List[str]]:
-    mode = _detect_module_mode(project_root)
-    bins = _candidate_bins(project_root)
-
-    def real(name: str) -> Optional[str]:
-        for cand in bins.get(name, []):
-            p = Path(cand)
-            if p.exists() and p.is_file():
-                return str(p)
-        return _find_in_path(bins.get(name, []))
-
-    runners: List[List[str]] = []
-
-    node = real("node")
-    if node:
-        if mode == "esm":
-            runners.append([node, "--loader", "ts-node/esm", str(script)])
-        else:
-            runners.append([node, "-r", "ts-node/register", str(script)])
-
-    bun = real("bun")
-    if bun:
-        runners.append([bun, "run", str(script)])
-
-    pnpm = real("pnpm")
-    if pnpm:
-        runners.append([pnpm, "exec", "ts-node", str(script)])
-
-    npm = real("npm")
-    if npm:
-        runners.append([npm, "exec", "ts-node", str(script)])
-
-    yarn = real("yarn")
-    if yarn:
-        runners.append([yarn, "ts-node", str(script)])
-
-    return runners
 
 def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
-    runners = _pick_runners(script, project_root)
+    """
+    Пытаемся запустить build-meta-from-zod.ts разными способами.
+    Порядок:
+      1) node -r ts-node/register (CJS — то, что нужно при ошибке "exports is not defined in ES module scope")
+      2) node --loader ts-node/esm (ESM)
+      3) bun run
+      4) pnpm exec ts-node
+      5) npm exec ts-node
+      6) yarn ts-node
+
+    Если ВСЕ варианты падают, НЕ выбрасываем ошибку сразу:
+    возможно, widget-meta.json уже был сгенерирован ранее.
+    Тогда дальше main() сам проверит наличие файла.
+    """
+    runners: List[List[str]] = []
+
+    node = _find_node_runner("node")
+    if node:
+        node = node.resolve()
+        # СНАЧАЛА CJS
+        runners.append([str(node), "-r", "ts-node/register", str(script)])
+        # ПОТОМ ESM — вдруг проект станет "type": "module"
+        runners.append([str(node), "--loader", "ts-node/esm", str(script)])
+
+    bun = _find_node_runner("bun")
+    if bun:
+        runners.append([str(bun.resolve()), "run", str(script)])
+
+    pnpm = _find_node_runner("pnpm")
+    if pnpm:
+        runners.append([str(pnpm.resolve()), "exec", "ts-node", str(script)])
+
+    npm = _find_node_runner("npm")
+    if npm:
+        runners.append([str(npm.resolve()), "exec", "ts-node", str(script)])
+
+    yarn = _find_node_runner("yarn")
+    if yarn:
+        runners.append([str(yarn.resolve()), "ts-node", str(script)])
+
     if not runners:
-        print("> Не найден node/bun/pnpm/npm/yarn — предполагаем, что JSON уже подготовлен.", file=sys.stderr)
+        print("> Не найден ни один раннер node/bun/pnpm/npm/yarn — предполагаем, что JSON уже подготовлен.", file=sys.stderr)
         return
-    cmd = runners[0]
-    print("> Запуск TS скрипта:", " ".join(cmd))
-    start = time.time()
-    try:
-        subprocess.run(
-            cmd,
-            cwd=str(project_root),
-            check=True,
-            timeout=timeout,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
-    except subprocess.TimeoutExpired:
-        raise RuntimeError(f"build-meta-from-zod.ts не завершился за {timeout} сек.")
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Ошибка запуска build-meta-from-zod.ts: {e}")
-    finally:
-        dur = time.time() - start
-        print(f"> TS скрипт завершился за {dur:.1f} сек.")
+
+    last_err: Optional[str] = None
+
+    for cmd in runners:
+        print("> Запуск TS скрипта:", " ".join(cmd))
+        try:
+            subprocess.run(cmd, cwd=str(project_root), check=True, timeout=timeout)
+            print("> TS скрипт успешно завершился.")
+            return
+        except subprocess.TimeoutExpired:
+            last_err = f"Таймаут при запуске: {' '.join(cmd)}"
+            print("⚠️", last_err, file=sys.stderr)
+        except subprocess.CalledProcessError as e:
+            last_err = f"Код выхода {e.returncode} при запуске: {' '.join(cmd)}"
+            print("⚠️", last_err, file=sys.stderr)
+
+    print("⚠️ Все варианты запуска build-meta-from-zod.ts завершились ошибкой.", file=sys.stderr)
+    if last_err:
+        print("   Последняя ошибка:", last_err, file=sys.stderr)
+    print("   Продолжаю выполнение, если widget-meta.json уже существует.", file=sys.stderr)
+
 
 def _safe(s: Any) -> str:
     return html.escape(str(s) if s is not None else "")
+
 
 # =====================================
 #   Логика поиска опубликованных виджетов
@@ -185,6 +152,7 @@ DEFAULT_IFT_BASE = "https://cms-res-web.iftonline.sberbank.ru/SBERCMS/da-sdk-b2c
 
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_UA = "Mozilla/5.0 (compatible; WidgetScanner/1.0; +https://sberbank.ru)"
+
 
 def _build_candidates(base: str, version: int, filename: str) -> List[str]:
     base = (base or "").rstrip("/")
@@ -201,7 +169,8 @@ def _build_candidates(base: str, version: int, filename: str) -> List[str]:
             out.append(u)
     return out
 
-def _make_context(insecure: bool) -> ssl.SSLContext | None:
+
+def _make_context(insecure: bool) -> Optional[ssl.SSLContext]:
     if not insecure:
         return None
     ctx = ssl.create_default_context()
@@ -209,18 +178,20 @@ def _make_context(insecure: bool) -> ssl.SSLContext | None:
     ctx.verify_mode = ssl.CERT_NONE
     return ctx
 
+
 def _headers() -> dict:
     return {
         "Accept": "application/json, */*;q=0.1",
         "User-Agent": DEFAULT_UA,
     }
 
+
 def _http_get_json_any(
     urls: List[str],
     timeout: float,
-    ctx: ssl.SSLContext | None,
+    ctx: Optional[ssl.SSLContext],
     verbose_prefix: str = "",
-) -> Tuple[bool, str | None, int | None, Any, str | None]:
+) -> Tuple[bool, Optional[str], Optional[int], Any, Optional[str]]:
     last_err: Optional[str] = None
     for u in urls:
         if verbose_prefix:
@@ -248,12 +219,13 @@ def _http_get_json_any(
             last_err = str(e)
     return False, None, None, None, last_err
 
+
 def _http_head_any(
     urls: List[str],
     timeout: float,
-    ctx: ssl.SSLContext | None,
+    ctx: Optional[ssl.SSLContext],
     verbose_prefix: str = "",
-) -> Tuple[bool, str | None, int | None, str | None]:
+) -> Tuple[bool, Optional[str], Optional[int], Optional[str]]:
     last_err: Optional[str] = None
     for u in urls:
         if verbose_prefix:
@@ -275,6 +247,7 @@ def _http_head_any(
             last_err = str(e)
     return False, None, None, last_err
 
+
 def normalize_widget_name(raw: Any) -> str:
     if not raw:
         return ""
@@ -286,6 +259,7 @@ def normalize_widget_name(raw: Any) -> str:
         s = s.replace("--", "-")
     return s.lower()
 
+
 def create_display_name(raw: Any) -> str:
     if not raw:
         return "unknown"
@@ -293,6 +267,7 @@ def create_display_name(raw: Any) -> str:
     while "--" in s:
         s = s.replace("--", "-")
     return s.lower()
+
 
 def ensure_widget_entry(store: Dict[str, Dict[str, Any]], key: str, display_name: str) -> Dict[str, Any]:
     if key not in store:
@@ -302,9 +277,11 @@ def ensure_widget_entry(store: Dict[str, Dict[str, Any]], key: str, display_name
         entry["name"] = display_name
     return entry
 
+
 def expand_range(start: int, end: int) -> List[int]:
     lo, hi = (start, end) if start <= end else (end, start)
     return list(range(lo, hi + 1))
+
 
 def parse_range_token(token: str) -> List[int]:
     token = (token or "").strip()
@@ -315,6 +292,7 @@ def parse_range_token(token: str) -> List[int]:
         raise ValueError(f'Invalid range token "{token}". Ожидался формат "start-end" или "start..end"')
     a, b = int(m.group(1)), int(m.group(2))
     return expand_range(a, b)
+
 
 def parse_versions_arg(text: str) -> List[int]:
     out: List[int] = []
@@ -330,12 +308,13 @@ def parse_versions_arg(text: str) -> List[int]:
             raise ValueError(f'Invalid version token "{part}"')
     return out
 
+
 def fetch_version(
     env_key: str,
     base_url: str,
     version: int,
     timeout: float,
-    ctx: ssl.SSLContext | None,
+    ctx: Optional[ssl.SSLContext],
     verbose: bool,
 ) -> Dict[str, Any]:
     prefix = f"[{env_key}] " if verbose else ""
@@ -370,6 +349,7 @@ def fetch_version(
         "container_error": err_container,
         "container_url": container_url,
     }
+
 
 def collect_published_widgets(
     versions: List[int],
@@ -412,7 +392,6 @@ def collect_published_widgets(
                     "error": info["stats_error"],
                     "url": info["stats_url"],
                 })
-                # даже если stats не ок — всё равно смотрим container, но widgets уже не будет
             if not info["container_ok"]:
                 diagnostics.append({
                     "environment": env["key"],
@@ -443,6 +422,7 @@ def collect_published_widgets(
 
     return payload, diagnostics
 
+
 # =====================================
 #       Построение HTML-таблицы
 # =====================================
@@ -455,19 +435,23 @@ def _agents_list(item: Dict[str, Any]) -> str:
         return ""
     return ", ".join(str(a) for a in agents)
 
+
 def _extract_display_description(item: Dict[str, Any]) -> str:
     for key in ("display_description", "displayDescription", "description"):
         if key in item and item[key]:
             return str(item[key])
     return ""
 
+
 def _storybook_link(name: str) -> str:
     slug = (name or "").replace("_", "")
     url = f"http://10.53.31.7:6001/public-storybook/?path=/docs/widget-store_widgets-{slug}--docs"
     return f'<a href="{_safe(url)}">{_safe(url)}</a>'
 
+
 def _normalize_widget_key(name: str) -> str:
     return normalize_widget_name(name)
+
 
 def render_table_html(items: List[Dict[str, Any]], env_keys: List[str]) -> str:
     env_keys = env_keys or []
@@ -522,6 +506,7 @@ def render_table_html(items: List[Dict[str, Any]], env_keys: List[str]) -> str:
     tail = "\n  </tbody>\n</table>"
     return "\n".join([head] + rows + [tail])
 
+
 # =====================================
 #       Confluence REST
 # =====================================
@@ -529,6 +514,7 @@ def render_table_html(items: List[Dict[str, Any]], env_keys: List[str]) -> str:
 def _auth_header(user: Optional[str], pwd: str) -> str:
     raw = f"{user or ''}:{pwd}".encode("utf-8")
     return "Basic " + base64.b64encode(raw).decode("ascii")
+
 
 def _http(method: str, url: str, headers: Dict[str, str], data: Optional[bytes] = None) -> Dict[str, Any]:
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
@@ -541,6 +527,7 @@ def _http(method: str, url: str, headers: Dict[str, str], data: Optional[bytes] 
         return {"status": e.code, "body": e.read()}
     except urllib.error.URLError as e:
         return {"status": None, "error": str(e), "body": b""}
+
 
 def confluence_get_page(conf_url: str, auth: str, page_id: int) -> Dict[str, Any]:
     url = f"{conf_url}/rest/api/content/{page_id}?expand=body.storage,version,ancestors"
@@ -556,6 +543,7 @@ def confluence_get_page(conf_url: str, auth: str, page_id: int) -> Dict[str, Any
     except Exception as e:
         raise RuntimeError(f"Failed to parse Confluence GET response: {e}")
 
+
 def _parent_ancestor(ancestors: Any) -> Optional[List[Dict[str, Any]]]:
     try:
         if ancestors and isinstance(ancestors, (list, tuple)):
@@ -566,6 +554,7 @@ def _parent_ancestor(ancestors: Any) -> Optional[List[Dict[str, Any]]]:
     except Exception:
         pass
     return None
+
 
 def confluence_put_storage(
     conf_url: str,
@@ -611,12 +600,15 @@ def confluence_put_storage(
     except Exception as e:
         raise RuntimeError(f"Failed to parse Confluence PUT response: {e}")
 
+
 # =====================================
 #                 main
 # =====================================
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Собрать таблицу из widget-meta.json, дополнить версиями DEV/IFT и записать в Confluence")
+    ap = argparse.ArgumentParser(
+        description="Собрать таблицу из widget-meta.json, дополнить версиями DEV/IFT и записать в Confluence"
+    )
 
     # Чтение widget-meta.json
     ap.add_argument("--script", required=True, help="Путь к build-meta-from-zod.ts")
@@ -628,7 +620,7 @@ def main() -> None:
     # Диапазон версий для сканирования опубликованных виджетов
     ap.add_argument(
         "--versions",
-        help='Диапазон(ы) версий: "20-30", "15..20" или список "12,14,18". Если не задано — сканирование отключено.'
+        help='Диапазон(ы) версий: "20-30", "15..20" или список "12,14,18". Если не задано — сканирование отключено.',
     )
     ap.add_argument("--from", dest="from_v", type=int, help="Начало диапазона версий (включительно)")
     ap.add_argument("--to", dest="to_v", type=int, help="Конец диапазона версий (включительно)")
@@ -636,14 +628,33 @@ def main() -> None:
     # Параметры окружений
     ap.add_argument("--dev-base", dest="dev_base", default=os.getenv("WIDGET_STORE_DEV_BASE", DEFAULT_DEV_BASE))
     ap.add_argument("--ift-base", dest="ift_base", default=os.getenv("WIDGET_STORE_IFT_BASE", DEFAULT_IFT_BASE))
-    ap.add_argument("--scan-timeout", type=float, default=DEFAULT_TIMEOUT, help=f"Таймаут HTTP при сканировании (default {DEFAULT_TIMEOUT})")
+    ap.add_argument(
+        "--scan-timeout",
+        type=float,
+        default=DEFAULT_TIMEOUT,
+        help=f"Таймаут HTTP при сканировании (default {DEFAULT_TIMEOUT})",
+    )
     ap.add_argument("--insecure", action="store_true", help="Отключить проверку TLS-сертификата для всех хостов")
-    ap.add_argument("--strict-tls", action="store_true", help="Жёсткая проверка TLS и для IFT (по умолчанию IFT — insecure)")
-    ap.add_argument("--scan-json", dest="scan_json", default=None, help="Куда сохранить JSON с опубликованными виджетами (по умолчанию outdir/published-widgets.json)")
+    ap.add_argument(
+        "--strict-tls",
+        action="store_true",
+        help="Жёсткая проверка TLS и для IFT (по умолчанию IFT — insecure)",
+    )
+    ap.add_argument(
+        "--scan-json",
+        dest="scan_json",
+        default=None,
+        help="Куда сохранить JSON с опубликованными виджетами (по умолчанию outdir/published-widgets.json)",
+    )
     ap.add_argument("--verbose-scan", action="store_true", help="Подробные логи HTTP при сканировании")
 
     # Confluence
-    ap.add_argument("--page-id", type=int, default=int(os.getenv("CONF_PAGE_ID", "21609790602")), help="Confluence pageId")
+    ap.add_argument(
+        "--page-id",
+        type=int,
+        default=int(os.getenv("CONF_PAGE_ID", "21609790602")),
+        help="Confluence pageId",
+    )
 
     args = ap.parse_args()
 
@@ -652,7 +663,11 @@ def main() -> None:
     if not script.exists():
         raise FileNotFoundError(f"Не найден скрипт: {script}")
 
-    outdir = (Path(os.getcwd()) / args.outdir).resolve() if not Path(args.outdir).is_absolute() else Path(args.outdir).resolve()
+    outdir = (
+        (Path(os.getcwd()) / args.outdir).resolve()
+        if not Path(args.outdir).is_absolute()
+        else Path(args.outdir).resolve()
+    )
     outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / args.outfile
 
