@@ -13,10 +13,10 @@
   name | PROM | IFT | agents | display_description | Storybook
 
 ВХОД:
-  - единственный параметр в командной строке: page_id (опционально)
+  - единственный позиционный параметр в командной строке: page_id (опционально)
     Если page_id не передан, берётся из ENV CONF_PAGE_ID.
 
-  Пример:
+  Примеры:
     python confluence_save_table_with_presence.py 21609790602
     python confluence_save_table_with_presence.py   # pageId из CONF_PAGE_ID
 
@@ -28,15 +28,18 @@
   CONF_PASS=some-token-or-password
   CONF_PAGE_ID=21609790602        # опционально, если не передавать id в CLI
 
-  # Пути для meta-генерации
-  META_SCRIPT=./widget-store/scripts/build-meta-from-zod.ts
-  META_OUTDIR=./widget-store/output
+  # Базовая директория (root для относительных путей)
+  BASE_DIR=/home/user/projects/widgets
+
+  # Пути относительно BASE_DIR:
+  META_SCRIPT=widget-store/scripts/build-meta-from-zod.ts
+  META_OUTDIR=widget-store/output
   META_OUTFILE=widget-meta.json
 
-  # Путь к published-widgets.json
-  PUBLISHED_JSON=./published-widgets.json
+  # Путь к published-widgets.json (тоже относительно BASE_DIR или абсолютный)
+  PUBLISHED_JSON=published-widgets.json
 
-  # Таймауты (опционально, есть дефолты)
+  # Таймауты (опционально)
   TS_TIMEOUT=300   # сек, запуск TS-скрипта
   JSON_WAIT=120    # сек, ожидание JSON-файла
 """
@@ -535,7 +538,7 @@ def confluence_put_storage(
     return _http("PUT", url, headers, data=data)
 
 # =====================================================
-#                        Main
+#                        Main helpers
 # =====================================================
 
 def _wait_for_file(path: Path, wait_sec: int) -> None:
@@ -589,6 +592,9 @@ def _confluence_config(page_id_arg: Optional[int]) -> Tuple[str, Optional[str], 
 
     return conf_url, conf_user, conf_pass, page_id
 
+# =====================================================
+#                        Main
+# =====================================================
 
 def main() -> None:
     # 0. Подтягиваем значения из .env (если есть)
@@ -608,40 +614,48 @@ def main() -> None:
     # 1. Конфигурация Confluence
     conf_url, conf_user, conf_pass, page_id = _confluence_config(args.page_id)
 
-    # 2. Чтение конфигурации meta/published из ENV
-    script_str = os.getenv("META_SCRIPT", "").strip()
-    outdir_str = os.getenv("META_OUTDIR", "").strip()
-    outfile_name = os.getenv("META_OUTFILE", "widget-meta.json").strip() or "widget-meta.json"
-    published_json_str = os.getenv("PUBLISHED_JSON", "").strip()
-    ts_timeout_str = os.getenv("TS_TIMEOUT", "300").strip()
-    json_wait_str = os.getenv("JSON_WAIT", "120").strip()
+    # 2. Чтение конфигурации meta/published из ENV + BASE_DIR
+    base_dir_str = os.getenv("BASE_DIR", "").strip()
+    if base_dir_str:
+        base_dir = Path(base_dir_str).expanduser().resolve()
+    else:
+        base_dir = Path.cwd()
 
-    if not script_str:
-        raise RuntimeError("Нужно задать META_SCRIPT в .env (путь к build-meta-from-zod.ts).")
-    if not outdir_str:
-        raise RuntimeError("Нужно задать META_OUTDIR в .env (папка вывода JSON).")
+    def resolve_path(env_value: str, base: Path) -> Path:
+        """
+        Преобразует путь из .env в абсолютный:
+        - если путь абсолютный → возвращаем как есть
+        - если относительный → считаем относительно base_dir
+        """
+        p = Path(env_value.strip())
+        return p if p.is_absolute() else (base / p)
 
-    try:
-        ts_timeout = int(ts_timeout_str)
-    except Exception:
-        ts_timeout = 300
-
-    try:
-        json_wait = int(json_wait_str)
-    except Exception:
-        json_wait = 120
-
-    script = Path(script_str).resolve()
+    # Путь к build-meta-from-zod.ts
+    script_env = os.getenv("META_SCRIPT", "").strip()
+    if not script_env:
+        raise RuntimeError("Нужно указать META_SCRIPT в .env (путь к build-meta-from-zod.ts).")
+    script = resolve_path(script_env, base_dir).resolve()
     if not script.exists():
         raise FileNotFoundError(f"Не найден TS-скрипт: {script}")
 
-    outdir = Path(outdir_str)
-    if not outdir.is_absolute():
-        outdir = (Path(os.getcwd()) / outdir).resolve()
+    # Папка, куда TS кладёт JSON
+    outdir_env = os.getenv("META_OUTDIR", "").strip()
+    if not outdir_env:
+        raise RuntimeError("Нужно указать META_OUTDIR в .env (папка вывода JSON).")
+    outdir = resolve_path(outdir_env, base_dir).resolve()
     outdir.mkdir(parents=True, exist_ok=True)
+
+    # Имя файла меты (только имя, не путь)
+    outfile_name = os.getenv("META_OUTFILE", "widget-meta.json").strip() or "widget-meta.json"
     outfile = outdir / outfile_name
 
-    published_path = Path(published_json_str).resolve() if published_json_str else None
+    # Путь к published-widgets.json
+    published_env = os.getenv("PUBLISHED_JSON", "").strip()
+    published_path = resolve_path(published_env, base_dir).resolve() if published_env else None
+
+    # Таймауты
+    ts_timeout = int(os.getenv("TS_TIMEOUT", "300").strip() or "300")
+    json_wait = int(os.getenv("JSON_WAIT", "120").strip() or "120")
 
     # Корень проекта: на уровень выше папки scripts/ или директория скрипта
     project_root = script.parents[1] if script.parent.name.lower() in {"scripts", "script"} else script.parent
