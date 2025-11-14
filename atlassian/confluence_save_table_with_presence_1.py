@@ -12,11 +12,11 @@
 Текущая таблица в Confluence имеет колонки:
   name | PROM | IFT | agents | display_description | Storybook
 
-ENV:
+ENV (можно задать через .env или переменные окружения):
   CONF_URL      — https://confluence.example.com (обязательно)
   CONF_USER     — логин/email (можно пустым, если PAT без логина)
   CONF_PASS     — пароль / API токен / PAT (обязательно)
-  CONF_PAGE_ID  — pageId по умолчанию (опционально, можно передать флагом --page-id)
+  CONF_PAGE_ID  — pageId по умолчанию (опционально, переопределяется --page-id)
 
 Пример запуска:
   python confluence_save_table_with_presence.py ^
@@ -43,7 +43,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # =====================================================
-#              ДОБАВЛЕНА ЗАГРУЗКА .env
+#              ЗАГРУЗКА .env
 # =====================================================
 
 def _load_dotenv(path: str = ".env") -> None:
@@ -97,6 +97,7 @@ def _read_json(path: Path) -> Optional[dict]:
 
 
 def _detect_module_mode(project_root: Path) -> str:
+    """Определяем esm/cjs/unknown по package.json и tsconfig.json."""
     pkg = _read_json(project_root / "package.json") or {}
     if pkg.get("type") == "module":
         return "esm"
@@ -113,6 +114,7 @@ def _detect_module_mode(project_root: Path) -> str:
 
 
 def _candidate_bins(project_root: Path) -> Dict[str, List[str]]:
+    """Возвращает возможные пути к tsx/ts-node/node/npx (локальные + системные)."""
     bin_dir = project_root / "node_modules" / ".bin"
     on_windows = os.name == "nt"
 
@@ -139,25 +141,35 @@ def _candidate_bins(project_root: Path) -> Dict[str, List[str]]:
 
 
 def _pick_runners(script: Path, project_root: Path) -> List[List[str]]:
+    """
+    Возвращает список возможных команд для запуска TS-скрипта по убыванию приоритета:
+      1) tsx (локальный, затем через npx),
+      2) ts-node в режиме ESM,
+      3) ts-node в режиме CJS.
+    """
     bins = _candidate_bins(project_root)
     mode = _detect_module_mode(project_root)
     runners: List[List[str]] = []
 
+    # TSX
     for tsx in bins["tsx"]:
         runners.append([tsx, str(script)])
     if bins["npx"]:
         runners.append([bins["npx"][0], "-y", "tsx", str(script)])
 
+    # ESM-варианты ts-node
     if mode in ("esm", "unknown"):
         for tsn in bins["tsnode"]:
             runners.append([tsn, "--esm", "--transpile-only", str(script)])
         runners.append([bins["node"][0], "--loader", "ts-node/esm", str(script)])
 
+    # CJS-варианты ts-node
     if mode in ("cjs", "unknown"):
         for tsn in bins["tsnode"]:
             runners.append([tsn, "--transpile-only", str(script)])
         runners.append([bins["node"][0], "-r", "ts-node/register", str(script)])
 
+    # Убираем дубли
     uniq: List[List[str]] = []
     seen = set()
     for cmd in runners:
@@ -169,6 +181,7 @@ def _pick_runners(script: Path, project_root: Path) -> List[List[str]]:
 
 
 def _run_ts_once(cmd: List[str], cwd: Path, timeout_sec: int) -> None:
+    """Запускает одну команду, стримит вывод, проверяет код возврата."""
     print("> Запуск:", " ".join(cmd))
     proc = subprocess.Popen(
         cmd,
@@ -191,6 +204,10 @@ def _run_ts_once(cmd: List[str], cwd: Path, timeout_sec: int) -> None:
 
 
 def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
+    """
+    Пытаемся запустить TS-скрипт через один из раннеров.
+    Если ни один не сработал — просто логируем и продолжаем работу со старым JSON.
+    """
     for cmd in _pick_runners(script, project_root):
         try:
             _run_ts_once(cmd, cwd=project_root, timeout_sec=timeout)
@@ -198,7 +215,7 @@ def _maybe_run_ts(script: Path, project_root: Path, timeout: int) -> None:
         except Exception as e:
             print(f"! Runner failed: {' '.join(cmd)}")
             print(f"  Reason: {e}")
-    print("! Не удалось запустить TS-скрипт — используем существующий JSON.")
+    print("! Не удалось запустить TS-скрипт ни одним раннером — используем существующий JSON.")
 
 
 def _safe(value: Any) -> str:
@@ -206,11 +223,17 @@ def _safe(value: Any) -> str:
 
 
 def _normalize_widget_key(name: str) -> str:
+    """
+    Приводим имя виджета к общему виду:
+      - lower()
+      - убираем всё, кроме [a-z0-9]
+    """
     s = name.strip().lower()
     return re.sub(r"[^a-z0-9]+", "", s)
 
 
 def _extract_display_description(item: Dict[str, Any]) -> str:
+    """Берём display_description из xMeta или xPayload (строка-JSON), иначе пусто."""
     xmeta = item.get("xMeta")
     if isinstance(xmeta, dict) and isinstance(xmeta.get("display_description"), str):
         return xmeta["display_description"]
@@ -245,6 +268,11 @@ def _storybook_link(name: str) -> str:
 
 
 def _presence_for_item(item: Dict[str, Any], timeout: float = 8.0) -> Dict[str, Any]:
+    """
+    Дополняет элемент полями:
+      dev_present, ift_present, dev_url, ift_url, presence_error (при ошибке).
+    Сейчас эти поля в таблице не выводятся, но могут пригодиться далее.
+    """
     name = str(item.get("name") or "").strip()
     version = item.get("xVersion")
     try:
@@ -270,9 +298,9 @@ def _presence_for_item(item: Dict[str, Any], timeout: float = 8.0) -> Dict[str, 
         return out
 
     try:
-        res = widget_presence.check_widget(name, version_int, timeout=timeout)  # type: ignore
-        out["dev_present"] = bool(res.get("dev_present"))
-        out["ift_present"] = bool(res.get("ift_present"))
+        res = widget_presence.check_widget(name, version_int, timeout=timeout)  # type: ignore[attr-defined]
+        out["dev_present"] = bool(res.get("dev_present")) if res.get("dev_present") is not None else None
+        out["ift_present"] = bool(res.get("ift_present")) if res.get("ift_present") is not None else None
         out["dev_url"] = res.get("dev_url")
         out["ift_url"] = res.get("ift_url")
         if res.get("normalized_name"):
@@ -287,17 +315,43 @@ def _presence_for_item(item: Dict[str, Any], timeout: float = 8.0) -> Dict[str, 
 # =====================================================
 
 def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Optional[int]]]:
-    if not path or not path.exists():
+    """
+    Читает JSON вида:
+      [{ "widget": "ask-user-select-answers",
+         "DEV": [{"releaseVersion": 24}, ...],
+         "IFT": [{"releaseVersion": 21}, ...]
+      }, ...]
+    и возвращает словарь по нормализованному ключу:
+      {
+        "askuserselectanswers": {
+          "DEV": 56,
+          "IFT": 56,
+          "widget": "ask-user-select-answers"
+        },
+        ...
+      }
+    """
+    if not path:
+        return {}
+    if not path.exists():
+        print(f"! published-json не найден: {path}")
         return {}
 
     try:
         with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
-    except Exception:
+    except Exception as e:
+        print(f"! Не удалось прочитать published-json {path}: {e}")
         return {}
 
-    def last_ver(items: Any) -> Optional[int]:
-        versions = []
+    if not isinstance(data, list):
+        print(f"! published-json {path} должен быть массивом")
+        return {}
+
+    result: Dict[str, Dict[str, Optional[int]]] = {}
+
+    def last_version(items: Any) -> Optional[int]:
+        versions: List[int] = []
         if isinstance(items, list):
             for it in items:
                 if isinstance(it, dict) and "releaseVersion" in it:
@@ -307,28 +361,42 @@ def _load_published_versions(path: Optional[Path]) -> Dict[str, Dict[str, Option
                         pass
         return max(versions) if versions else None
 
-    out: Dict[str, Dict[str, Optional[int]]] = {}
-
     for obj in data:
         if not isinstance(obj, dict):
             continue
-        widget = str(obj.get("widget") or "").strip()
-        if not widget:
+        widget_name = str(obj.get("widget") or "").strip()
+        if not widget_name:
             continue
 
-        key = _normalize_widget_key(widget)
-        out[key] = {
-            "DEV": last_ver(obj.get("DEV") or []),
-            "IFT": last_ver(obj.get("IFT") or []),
+        key = _normalize_widget_key(widget_name)
+        dev_list = obj.get("DEV") or []
+        ift_list = obj.get("IFT") or []
+
+        result[key] = {
+            "DEV": last_version(dev_list),
+            "IFT": last_version(ift_list),
+            "widget": widget_name,
         }
 
-    return out
+    return result
 
 # =====================================================
 #                Рендер HTML таблицы
 # =====================================================
 
-def render_table_html(items: List[Dict[str, Any]], published_versions: Dict[str, Dict[str, Optional[int]]]) -> str:
+def render_table_html(
+    items: List[Dict[str, Any]],
+    published_versions: Dict[str, Dict[str, Optional[int]]],
+) -> str:
+    """
+    Таблица:
+      name | PROM | IFT | agents | display_description | Storybook
+
+    name — берётся из published_versions['widget'], если есть, иначе из item['name'].
+    PROM — последняя DEV releaseVersion из published-widgets.json.
+    IFT  — последняя IFT releaseVersion.
+    Если данных нет — выводится ❌.
+    """
     head = """
 <table class="wrapped">
   <colgroup><col/><col/><col/><col/><col/><col/></colgroup>
@@ -343,26 +411,39 @@ def render_table_html(items: List[Dict[str, Any]], published_versions: Dict[str,
     </tr>
 """.rstrip()
 
-    rows = []
+    rows: List[str] = []
 
     for it in items:
-        name = str(it.get("name") or "")
-        agents = _agents_list(it)
-        desc = _extract_display_description(it)
-        link = _storybook_link(name) if name else ""
+        base_name = str(it.get("name") or "")
 
-        key = _normalize_widget_key(name)
+        # нормализованный ключ и данные из published_versions
+        key = _normalize_widget_key(base_name)
         pub = published_versions.get(key, {})
 
-        prom_rel = pub.get("DEV")
-        ift_rel = pub.get("IFT")
+        # name для вывода — имя ИЗ published_versions (widget), если есть
+        display_name = pub.get("widget") or base_name
+
+        agents = _agents_list(it)
+        desc = _extract_display_description(it)
+
+        # Имя для Storybook: если есть meta-имя с '_' — используем его,
+        # иначе берём display_name и заменяем '-' на '_'.
+        if base_name:
+            storybook_name = base_name
+        else:
+            storybook_name = display_name.replace("-", "_")
+
+        link = _storybook_link(storybook_name) if storybook_name else ""
+
+        prom_rel = pub.get("DEV")  # PROM = DEV_rel
+        ift_rel = pub.get("IFT")   # IFT = IFT_rel
 
         prom_str = str(prom_rel) if prom_rel is not None else "❌"
-        ift_str = str(ift_rel) if ift_rel is not None else "❌"
+        ift_str  = str(ift_rel)  if ift_rel  is not None else "❌"
 
         rows.append(
             f"    <tr>\n"
-            f"      <td>{_safe(name)}</td>\n"
+            f"      <td>{_safe(display_name)}</td>\n"
             f"      <td>{_safe(prom_str)}</td>\n"
             f"      <td>{_safe(ift_str)}</td>\n"
             f"      <td>{_safe(agents)}</td>\n"
@@ -411,7 +492,16 @@ def confluence_get_page(conf_url: str, auth: str, page_id: int) -> Dict[str, Any
     return _http("GET", url, headers)
 
 
-def confluence_put_storage(conf_url: str, auth: str, page_id: int, title: str, html_body: str, next_version: int, ancestors=None, message: str = "") -> Dict[str, Any]:
+def confluence_put_storage(
+    conf_url: str,
+    auth: str,
+    page_id: int,
+    title: str,
+    html_body: str,
+    next_version: int,
+    ancestors=None,
+    message: str = "",
+) -> Dict[str, Any]:
     url = f"{conf_url}/rest/api/content/{page_id}"
     payload = {
         "id": str(page_id),
@@ -422,9 +512,12 @@ def confluence_put_storage(conf_url: str, auth: str, page_id: int, title: str, h
     }
     if ancestors:
         payload["ancestors"] = ancestors
-
     data = json.dumps(payload).encode("utf-8")
-    headers = {"Accept": "application/json", "Content-Type": "application/json", "Authorization": auth}
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": auth,
+    }
     return _http("PUT", url, headers, data=data)
 
 # =====================================================
@@ -432,6 +525,7 @@ def confluence_put_storage(conf_url: str, auth: str, page_id: int, title: str, h
 # =====================================================
 
 def _wait_for_file(path: Path, wait_sec: int) -> None:
+    """Ждём появления непустого файла path не дольше wait_sec секунд."""
     print("> Ожидание файла:", path)
     deadline = time.time() + wait_sec
     while time.time() < deadline:
@@ -443,16 +537,23 @@ def _wait_for_file(path: Path, wait_sec: int) -> None:
 
 
 def _load_widget_meta(path: Path) -> List[Dict[str, Any]]:
-    with path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        raise RuntimeError(f"Не удалось прочитать JSON: {e}")
     if not isinstance(data, list):
         raise RuntimeError("Ожидался массив объектов с виджетами.")
     return data
 
 
 def _confluence_config(args: argparse.Namespace) -> Tuple[str, Optional[str], str, int]:
+    """
+    Берём конфиг Confluence из ENV + аргументов.
+    URL и PASS обязательны, USER может быть пустым (PAT).
+    """
     conf_url = os.getenv("CONF_URL", "").strip()
-    conf_user = os.getenv("CONF_USER")
+    conf_user = os.getenv("CONF_USER")  # может быть None
     conf_pass = os.getenv("CONF_PASS", "").strip()
     page_id = args.page_id
 
@@ -463,62 +564,102 @@ def _confluence_config(args: argparse.Namespace) -> Tuple[str, Optional[str], st
 
 
 def main() -> None:
-
-    # >>> Загрузка .env <<<
+    # 0. Подтягиваем значения из .env (если есть)
     _load_dotenv()
 
-    parser = argparse.ArgumentParser(description="Собрать таблицу из widget-meta.json и записать её в Confluence")
-
+    parser = argparse.ArgumentParser(
+        description="Собрать таблицу из widget-meta.json и записать её в Confluence"
+    )
     parser.add_argument("--script", required=True, help="Путь к build-meta-from-zod.ts")
-    parser.add_argument("--outdir", required=True, help="Папка вывода")
-    parser.add_argument("--outfile", default="widget-meta.json", help="Имя JSON файла")
-    parser.add_argument("--timeout", type=int, default=300)
-    parser.add_argument("--wait", type=int, default=120)
-    parser.add_argument("--page-id", type=int, default=int(os.getenv("CONF_PAGE_ID", "21609790602")))
-    parser.add_argument("--published-json", help="JSON с релизами виджетов", default=None)
-
+    parser.add_argument("--outdir", required=True, help="Папка вывода (относительно текущей рабочей директории)")
+    parser.add_argument("--outfile", default="widget-meta.json", help="Имя JSON файла (default: widget-meta.json)")
+    parser.add_argument("--timeout", type=int, default=300, help="Таймаут запуска TS, сек (default 300)")
+    parser.add_argument("--wait", type=int, default=120, help="Таймаут ожидания JSON, сек (default 120)")
+    parser.add_argument(
+        "--page-id",
+        type=int,
+        default=int(os.getenv("CONF_PAGE_ID", "21609790602")),
+        help="Confluence pageId (по умолчанию из ENV CONF_PAGE_ID)",
+    )
+    parser.add_argument(
+        "--published-json",
+        help="JSON с релизами виджетов (формат published-widgets.json)",
+        default=None,
+    )
     args = parser.parse_args()
 
-    # Пути
+    # 1. Разбираем пути
     script = Path(args.script).resolve()
     if not script.exists():
         raise FileNotFoundError(f"Не найден скрипт: {script}")
 
-    outdir = (Path(os.getcwd()) / args.outdir).resolve() if not Path(args.outdir).is_absolute() else Path(args.outdir).resolve()
+    outdir = (
+        (Path(os.getcwd()) / args.outdir).resolve()
+        if not Path(args.outdir).is_absolute()
+        else Path(args.outdir).resolve()
+    )
     outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / args.outfile
 
+    # Корень проекта: на уровень выше папки scripts/ или директория скрипта
     project_root = script.parents[1] if script.parent.name.lower() in {"scripts", "script"} else script.parent
 
+    # 2. Пытаемся запустить TS-скрипт
     _maybe_run_ts(script, project_root, timeout=args.timeout)
 
+    # 3. Ждём JSON и читаем его
     _wait_for_file(outfile, args.wait)
     widgets = _load_widget_meta(outfile)
 
+    # 4. Готовим published-widgets (последние версии по DEV/IFT)
     published_path = Path(args.published_json).resolve() if args.published_json else None
     published_versions = _load_published_versions(published_path)
 
-    enriched = [_presence_for_item(item) for item in widgets]
-    table_html = render_table_html(enriched, published_versions)
+    # 5. Объединяем meta и published: хотим строки ДЛЯ ВСЕХ виджетов из published + meta
+    items_by_key: Dict[str, Dict[str, Any]] = {}
 
+    # сначала все виджеты из meta
+    for item in widgets:
+        meta_name = str(item.get("name") or "")
+        if not meta_name:
+            continue
+        key = _normalize_widget_key(meta_name)
+        items_by_key[key] = _presence_for_item(item)
+
+    # добавляем виджеты, которые есть только в published_versions
+    for key, pub in published_versions.items():
+        if key in items_by_key:
+            continue
+        widget_name = str(pub.get("widget") or "").strip()
+        if not widget_name:
+            continue
+        synthetic = {"name": widget_name}
+        items_by_key[key] = _presence_for_item(synthetic)
+
+    # итоговый список для рендера
+    items_for_render = list(items_by_key.values())
+
+    # 6. Строим таблицу
+    table_html = render_table_html(items_for_render, published_versions)
     page_html = (
         f"<p><strong>Widget meta table</strong> — "
         f"обновлено: {html.escape(time.strftime('%Y-%m-%d %H:%M:%S'))}</p>\n"
         f"{table_html}"
     )
 
+    # 7. Отправляем в Confluence
     conf_url, conf_user, conf_pass, page_id = _confluence_config(args)
     auth = _auth_header(conf_user, conf_pass)
-
     page = confluence_get_page(conf_url, auth, page_id)
     title = page.get("title") or f"Page {page_id}"
 
-    ancestors = None
+    # ancestors: берём последнего предка, чтобы страница не улетала в корень
     anc_list = page.get("ancestors") or []
     if anc_list:
         parent_id = anc_list[-1].get("id")
-        if parent_id:
-            ancestors = [{"id": parent_id}]
+        ancestors = [{"id": parent_id}] if parent_id else None
+    else:
+        ancestors = None
 
     next_version = int(page.get("version", {}).get("number", 0)) + 1
 
@@ -532,7 +673,6 @@ def main() -> None:
         ancestors=ancestors,
         message="Автообновление: таблица (name, PROM, IFT, agents, display_description, Storybook)",
     )
-
     print(f"✅ Обновлено: pageId={page_id} (версия {next_version})")
 
 
