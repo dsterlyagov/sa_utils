@@ -84,3 +84,12 @@ python confluence_save_table_with_presence.py ^
   --outfile widget-meta.json ^
   --presence-json .\published-widgets.json ^
   --page-id 21609790602
+
+Как запускать:
+если хочешь использовать CONF_PAGE_ID из .env:
+python confluence_save_table_with_presence.py
+если хочешь разово обновить другую страницу — можно передать id явно:
+python confluence_save_table_with_presence.py 123456789
+(в этом случае значение из CONF_PAGE_ID будет проигнорировано).
+
+python confluence_save_table_with_presence.py 123456789

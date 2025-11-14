@@ -4,7 +4,7 @@
 """
 Скрипт:
   1. Запускает build-meta-from-zod.ts (если получилось найти раннер).
-  2. Ждёт JSON (--outdir/--outfile) и читает его.
+  2. Ждёт JSON (META_OUTDIR/META_OUTFILE) и читает его.
   3. Дополняет данные информацией о присутствии виджета на DEV/IFT (widget_presence).
   4. Читает published-widgets.json и добавляет последние releaseVersion по DEV/IFT.
   5. Рендерит HTML-таблицу и записывает её в Confluence.
@@ -12,19 +12,33 @@
 Текущая таблица в Confluence имеет колонки:
   name | PROM | IFT | agents | display_description | Storybook
 
-ENV (можно задать через .env или переменные окружения):
-  CONF_URL      — https://confluence.example.com (обязательно)
-  CONF_USER     — логин/email (можно пустым, если PAT без логина)
-  CONF_PASS     — пароль / API токен / PAT (обязательно)
-  CONF_PAGE_ID  — pageId по умолчанию (опционально, переопределяется --page-id)
+ВХОД:
+  - единственный параметр в командной строке: page_id (опционально)
+    Если page_id не передан, берётся из ENV CONF_PAGE_ID.
 
-Пример запуска:
-  python confluence_save_table_with_presence.py ^
-    --script .\widget-store\scripts\build-meta-from-zod.ts ^
-    --outdir .\widget-store\output ^
-    --outfile widget-meta.json ^
-    --published-json published-widgets.json ^
-    --page-id 21609790602
+  Пример:
+    python confluence_save_table_with_presence.py 21609790602
+    python confluence_save_table_with_presence.py   # pageId из CONF_PAGE_ID
+
+НАСТРОЙКИ ЧЕРЕЗ .env / ENV:
+
+  # Confluence
+  CONF_URL=https://confluence.example.com
+  CONF_USER=user.login
+  CONF_PASS=some-token-or-password
+  CONF_PAGE_ID=21609790602        # опционально, если не передавать id в CLI
+
+  # Пути для meta-генерации
+  META_SCRIPT=./widget-store/scripts/build-meta-from-zod.ts
+  META_OUTDIR=./widget-store/output
+  META_OUTFILE=widget-meta.json
+
+  # Путь к published-widgets.json
+  PUBLISHED_JSON=./published-widgets.json
+
+  # Таймауты (опционально, есть дефолты)
+  TS_TIMEOUT=300   # сек, запуск TS-скрипта
+  JSON_WAIT=120    # сек, ожидание JSON-файла
 """
 
 import argparse
@@ -547,18 +561,31 @@ def _load_widget_meta(path: Path) -> List[Dict[str, Any]]:
     return data
 
 
-def _confluence_config(args: argparse.Namespace) -> Tuple[str, Optional[str], str, int]:
+def _confluence_config(page_id_arg: Optional[int]) -> Tuple[str, Optional[str], str, int]:
     """
-    Берём конфиг Confluence из ENV + аргументов.
+    Берём конфиг Confluence из ENV.
     URL и PASS обязательны, USER может быть пустым (PAT).
+    page_id:
+      - если передан в CLI, используем его;
+      - иначе берём CONF_PAGE_ID.
     """
     conf_url = os.getenv("CONF_URL", "").strip()
     conf_user = os.getenv("CONF_USER")  # может быть None
     conf_pass = os.getenv("CONF_PASS", "").strip()
-    page_id = args.page_id
 
     if not conf_url or not conf_pass:
         raise RuntimeError("Нужно задать ENV: CONF_URL и CONF_PASS (и при Basic — CONF_USER).")
+
+    if page_id_arg is not None:
+        page_id = page_id_arg
+    else:
+        env_page = os.getenv("CONF_PAGE_ID", "").strip()
+        if not env_page:
+            raise RuntimeError("Не задан pageId: укажите в CLI или через ENV CONF_PAGE_ID.")
+        try:
+            page_id = int(env_page)
+        except Exception:
+            raise RuntimeError(f"Некорректное значение CONF_PAGE_ID: {env_page!r}")
 
     return conf_url, conf_user, conf_pass, page_id
 
@@ -570,52 +597,66 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Собрать таблицу из widget-meta.json и записать её в Confluence"
     )
-    parser.add_argument("--script", required=True, help="Путь к build-meta-from-zod.ts")
-    parser.add_argument("--outdir", required=True, help="Папка вывода (относительно текущей рабочей директории)")
-    parser.add_argument("--outfile", default="widget-meta.json", help="Имя JSON файла (default: widget-meta.json)")
-    parser.add_argument("--timeout", type=int, default=300, help="Таймаут запуска TS, сек (default 300)")
-    parser.add_argument("--wait", type=int, default=120, help="Таймаут ожидания JSON, сек (default 120)")
     parser.add_argument(
-        "--page-id",
+        "page_id",
         type=int,
-        default=int(os.getenv("CONF_PAGE_ID", "21609790602")),
-        help="Confluence pageId (по умолчанию из ENV CONF_PAGE_ID)",
-    )
-    parser.add_argument(
-        "--published-json",
-        help="JSON с релизами виджетов (формат published-widgets.json)",
-        default=None,
+        nargs="?",
+        help="Confluence pageId (если не указан — берётся из ENV CONF_PAGE_ID)",
     )
     args = parser.parse_args()
 
-    # 1. Разбираем пути
-    script = Path(args.script).resolve()
-    if not script.exists():
-        raise FileNotFoundError(f"Не найден скрипт: {script}")
+    # 1. Конфигурация Confluence
+    conf_url, conf_user, conf_pass, page_id = _confluence_config(args.page_id)
 
-    outdir = (
-        (Path(os.getcwd()) / args.outdir).resolve()
-        if not Path(args.outdir).is_absolute()
-        else Path(args.outdir).resolve()
-    )
+    # 2. Чтение конфигурации meta/published из ENV
+    script_str = os.getenv("META_SCRIPT", "").strip()
+    outdir_str = os.getenv("META_OUTDIR", "").strip()
+    outfile_name = os.getenv("META_OUTFILE", "widget-meta.json").strip() or "widget-meta.json"
+    published_json_str = os.getenv("PUBLISHED_JSON", "").strip()
+    ts_timeout_str = os.getenv("TS_TIMEOUT", "300").strip()
+    json_wait_str = os.getenv("JSON_WAIT", "120").strip()
+
+    if not script_str:
+        raise RuntimeError("Нужно задать META_SCRIPT в .env (путь к build-meta-from-zod.ts).")
+    if not outdir_str:
+        raise RuntimeError("Нужно задать META_OUTDIR в .env (папка вывода JSON).")
+
+    try:
+        ts_timeout = int(ts_timeout_str)
+    except Exception:
+        ts_timeout = 300
+
+    try:
+        json_wait = int(json_wait_str)
+    except Exception:
+        json_wait = 120
+
+    script = Path(script_str).resolve()
+    if not script.exists():
+        raise FileNotFoundError(f"Не найден TS-скрипт: {script}")
+
+    outdir = Path(outdir_str)
+    if not outdir.is_absolute():
+        outdir = (Path(os.getcwd()) / outdir).resolve()
     outdir.mkdir(parents=True, exist_ok=True)
-    outfile = outdir / args.outfile
+    outfile = outdir / outfile_name
+
+    published_path = Path(published_json_str).resolve() if published_json_str else None
 
     # Корень проекта: на уровень выше папки scripts/ или директория скрипта
     project_root = script.parents[1] if script.parent.name.lower() in {"scripts", "script"} else script.parent
 
-    # 2. Пытаемся запустить TS-скрипт
-    _maybe_run_ts(script, project_root, timeout=args.timeout)
+    # 3. Пытаемся запустить TS-скрипт
+    _maybe_run_ts(script, project_root, timeout=ts_timeout)
 
-    # 3. Ждём JSON и читаем его
-    _wait_for_file(outfile, args.wait)
+    # 4. Ждём JSON и читаем его
+    _wait_for_file(outfile, json_wait)
     widgets = _load_widget_meta(outfile)
 
-    # 4. Готовим published-widgets (последние версии по DEV/IFT)
-    published_path = Path(args.published_json).resolve() if args.published_json else None
+    # 5. Готовим published-widgets (последние версии по DEV/IFT)
     published_versions = _load_published_versions(published_path)
 
-    # 5. Объединяем meta и published: хотим строки ДЛЯ ВСЕХ виджетов из published + meta
+    # 6. Объединяем meta и published: хотим строки ДЛЯ ВСЕХ виджетов из published + meta
     items_by_key: Dict[str, Dict[str, Any]] = {}
 
     # сначала все виджеты из meta
@@ -639,7 +680,7 @@ def main() -> None:
     # итоговый список для рендера
     items_for_render = list(items_by_key.values())
 
-    # 6. Строим таблицу
+    # 7. Строим таблицу
     table_html = render_table_html(items_for_render, published_versions)
     page_html = (
         f"<p><strong>Widget meta table</strong> — "
@@ -647,8 +688,7 @@ def main() -> None:
         f"{table_html}"
     )
 
-    # 7. Отправляем в Confluence
-    conf_url, conf_user, conf_pass, page_id = _confluence_config(args)
+    # 8. Отправляем в Confluence
     auth = _auth_header(conf_user, conf_pass)
     page = confluence_get_page(conf_url, auth, page_id)
     title = page.get("title") or f"Page {page_id}"
