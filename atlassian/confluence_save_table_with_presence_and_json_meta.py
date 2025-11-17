@@ -572,17 +572,18 @@ def confluence_upload_or_update_attachment(
     Заливает файл как attachment на страницу:
       - если уже есть вложение с таким именем -> обновляет его содержимое
       - иначе -> создаёт новое вложение
+
+    ВАЖНО: добавляем заголовок X-Atlassian-Token: no-check,
+    иначе Confluence отвечает 403 XSRF check failed.
     """
     filename = file_path.name
     existing = confluence_get_attachment(conf_url, auth, page_id, filename)
 
     if existing and existing.get("id"):
-        # обновляем существующий attachment
         attach_id = existing["id"]
-        url = f"{conf_url}/rest/api/content/{attach_id}/data"
+        url = f"{conf_url}/rest/api/content/{page_id}/child/attachment/{attach_id}/data"
         print(f"> Обновляем attachment: {filename} (id={attach_id})")
     else:
-        # создаём новое вложение
         url = f"{conf_url}/rest/api/content/{page_id}/child/attachment"
         print(f"> Создаём новый attachment: {filename}")
 
@@ -591,7 +592,6 @@ def confluence_upload_or_update_attachment(
 
     boundary = f"----pywidgetboundary{int(time.time() * 1000)}"
 
-    # multipart/form-data body
     parts: List[bytes] = []
     parts.append(f"--{boundary}\r\n".encode("utf-8"))
     parts.append(
@@ -607,6 +607,7 @@ def confluence_upload_or_update_attachment(
     headers = {
         "Accept": "application/json",
         "Authorization": auth,
+        "X-Atlassian-Token": "no-check",
         "Content-Type": f"multipart/form-data; boundary={boundary}",
     }
 
@@ -807,7 +808,7 @@ def main() -> None:
     # 9. Заливаем widget-meta.json как attachment
     if outfile.exists():
         try:
-            att_res = confluence_upload_or_update_attachment(conf_url, auth, page_id, outfile)
+            confluence_upload_or_update_attachment(conf_url, auth, page_id, outfile)
             print(f"📎 Attachment обновлён/создан: {outfile.name}")
         except Exception as e:
             print(f"! Не удалось загрузить attachment {outfile}: {e}", file=sys.stderr)
