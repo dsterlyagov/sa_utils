@@ -1,42 +1,71 @@
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
 
-REM ===== Имя задачи в Планировщике =====
+chcp 65001 >nul
+
+REM ===========================================================
+REM ========== НАСТРОЙКИ ======================================
+REM ===========================================================
+
+REM Имя задачи в Планировщике
 set "TASK_NAME=WidgetMetaToConfluence"
 
-REM ===== Директория, где лежит этот .bat (и run_confluence.bat) =====
-set "TASK_DIR=%~dp0"
+REM Директория, где лежит этот .bat
+set "SCRIPT_DIR=%~dp0"
+cd /d "%SCRIPT_DIR%"
 
-REM Убираем возможный завершающий \
-if "%TASK_DIR:~-1%"=="\" set "TASK_DIR=%TASK_DIR:~0,-1%"
+REM Путь к python.exe — ОБЯЗАТЕЛЬНО УКАЖИ СВОЙ
+REM ВАРИАНТ 1: виртуальное окружение
+REM set "PYTHON_EXE=%SCRIPT_DIR%..\venv\Scripts\python.exe"
 
-REM Полный путь к run_confluence.bat
-set "RUN_BAT=%TASK_DIR%\run_confluence.bat"
+REM ВАРИАНТ 2: системный Python
+set "PYTHON_EXE=C:\Python312\python.exe"
 
-echo Creating SYSTEM task "%TASK_NAME%"...
-echo TASK_DIR = %TASK_DIR%
-echo RUN_BAT  = %RUN_BAT%
-echo.
+REM Лог-файл
+set "LOG=%SCRIPT_DIR%confluence.log"
 
-REM === Создаём задачу под SYSTEM ===
-schtasks /create ^
- /tn "%TASK_NAME%" ^
- /tr "%RUN_BAT%" ^
- /sc minute ^
- /mo 5 ^
- /ru "SYSTEM" ^
- /rl HIGHEST ^
- /f
 
-if errorlevel 1 (
+REM ===========================================================
+REM ========== 1. РЕЖИМ ИНСТАЛЛЯЦИИ ЗАДАЧИ ====================
+REM ===========================================================
+
+if /i "%1"=="/install" (
+
+    echo Installing task "%TASK_NAME%" to Task Scheduler...
+    echo This file will be executed every 5 minutes as SYSTEM.
     echo.
-    echo [ERROR] Failed to create task "%TASK_NAME%".
-) else (
+
+    REM Создаём задачу, которая запускает ЭТОТ ЖЕ .bat
+    schtasks /create ^
+     /tn "%TASK_NAME%" ^
+     /tr "\"%~f0\"" ^
+     /sc minute ^
+     /mo 5 ^
+     /ru SYSTEM ^
+     /rl HIGHEST ^
+     /f
+
+    if errorlevel 1 (
+        echo [ERROR] Task creation failed.
+    ) else (
+        echo [OK] Task "%TASK_NAME%" installed successfully.
+    )
+
     echo.
-    echo [OK] Task "%TASK_NAME%" created.
-    echo It will run every 5 minutes as SYSTEM.
+    pause
+    exit /b
 )
 
-echo.
-pause
-endlocal
+
+REM ===========================================================
+REM ========== 2. РЕЖИМ ЗАПУСКА САМОГО PYTHON =================
+REM ===========================================================
+
+echo [%date% %time%] START >> "%LOG%"
+
+"%PYTHON_EXE%" "%SCRIPT_DIR%confluence_save_table_with_presence.py" >> "%LOG%" 2>&1
+set "ERR=%ERRORLEVEL%"
+
+echo [%date% %time%] END (exitcode=%ERR%) >> "%LOG%"
+
+exit /b %ERR%
