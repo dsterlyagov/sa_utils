@@ -7,33 +7,53 @@ from graphviz import Digraph
 
 
 def load_yaml(path: Path):
+    """
+    Загружаем YAML и возвращаем список объектов.
+    Поддерживаются варианты:
+    - верхний уровень — список
+    - верхний уровень — словарь с ключом digitalArchitecture (как в struct.yaml)
+    - верхний уровень — словарь с ключом items
+    """
     with path.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
-    # поддержка двух вариантов: просто список или {items: [...]}
-    if isinstance(data, dict) and "items" in data:
-        items = data["items"]
-    else:
-        items = data
+    # 1) если сразу список
+    if isinstance(data, list):
+        return data
 
-    if not isinstance(items, list):
-        raise ValueError("Ожидался список объектов в YAML")
+    # 2) если словарь – пробуем взять известные ключи
+    if isinstance(data, dict):
+        if "digitalArchitecture" in data and isinstance(data["digitalArchitecture"], list):
+            return data["digitalArchitecture"]
+        if "items" in data and isinstance(data["items"], list):
+            return data["items"]
 
-    return items
+    raise ValueError(
+        "Ожидался список объектов в YAML (list) или словарь с ключом 'digitalArchitecture' / 'items'"
+    )
 
 
 def build_graph_struct(items):
     """
     Формирует структуру для JSON-графа и для визуализации.
-    Вершины: Module (product agent), SubSystem (domain agent)
-    Рёбра: parentYamlId -> yamlId
+
+    Включаем только:
+    - kind == "Module"  (продуктовый агент)
+    - kind == "SubSystem" (доменный агент)
+
+    Связи строим по parentYamlId -> yamlId,
+    но только если оба элемента тоже Module/SubSystem.
     """
-    by_id = {str(item["yamlId"]): item for item in items}
+    # отфильтруем только нужные виды
+    filtered = [i for i in items if i.get("kind") in ("Module", "SubSystem")]
+
+    # индекс по yamlId среди отфильтрованных
+    by_id = {str(item["yamlId"]): item for item in filtered}
 
     nodes = []
     edges = []
 
-    for item in items:
+    for item in filtered:
         yaml_id = str(item.get("yamlId"))
         parent_id = item.get("parentYamlId")
         if parent_id is not None:
@@ -43,13 +63,11 @@ def build_graph_struct(items):
         name = item.get("name")
         id_app = item.get("idApp")
 
-        # тип агента
+        # тип агента для удобства
         if kind == "Module":
             agent_type = "product"   # продуктовый агент
-        elif kind == "SubSystem":
+        else:  # SubSystem
             agent_type = "domain"    # доменный агент
-        else:
-            agent_type = "other"
 
         nodes.append(
             {
@@ -61,7 +79,7 @@ def build_graph_struct(items):
             }
         )
 
-        # ребро по иерархии
+        # ребро по иерархии, только если родитель тоже в нашей выборке
         if parent_id is not None and parent_id in by_id:
             edges.append(
                 {
@@ -83,19 +101,26 @@ def save_json(graph_json, path: Path):
 def render_graph(graph_json, path: Path):
     """
     Визуализация с помощью Graphviz (формат PNG).
-    Module — прямоугольник, SubSystem — эллипс.
+
+    - Module   — прямоугольник (box) — продуктовый агент
+    - SubSystem — эллипс (ellipse) — доменный агент
     """
     dot = Digraph(comment="Module-SubSystem graph", format="png")
-    dot.attr(rankdir="LR")  # можно поменять на TB для вертикальной иерархии
+    # Можно поменять на "TB" (top-bottom) если нужна вертикальная иерархия
+    dot.attr(rankdir="LR")
 
     # добавляем вершины
     for node in graph_json["nodes"]:
         node_id = node["id"]
-        label = f'{node.get("name", "")}\\n({node["kind"]}, idApp={node.get("idApp")})'
+        name = node.get("name") or ""
+        id_app = node.get("idApp") or ""
+        kind = node.get("kind") or ""
 
-        if node["kind"] == "Module":
+        label = f"{name}\\n({kind}, idApp={id_app})"
+
+        if kind == "Module":
             shape = "box"
-        elif node["kind"] == "SubSystem":
+        elif kind == "SubSystem":
             shape = "ellipse"
         else:
             shape = "plaintext"
@@ -106,8 +131,8 @@ def render_graph(graph_json, path: Path):
     for edge in graph_json["edges"]:
         dot.edge(edge["source"], edge["target"])
 
-    # сохраняем
-    out_path = path.with_suffix("")  # graphviz сам добавит .png
+    # сохраняем (Graphviz сам добавит .png)
+    out_path = path.with_suffix("")  # убираем .png, graphviz добавит его сам
     dot.render(str(out_path), cleanup=True)
 
 
@@ -115,7 +140,7 @@ def main():
     if len(sys.argv) != 4:
         print(
             "Использование:\n"
-            "  python yaml_to_graph.py input.yaml output.json graph.png"
+            "  python graph_agents.py input.yaml output.json graph.png"
         )
         sys.exit(1)
 
